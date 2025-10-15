@@ -3,30 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brian Agallo - AI Assistant with Voice Chat</title>
+    <title>Dr. GenZ - AI Smart Doctor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #10a37f;
-            --primary-dark: #0d8c6c;
-            --sidebar: #202123;
-            --chat-bg: #343541;
-            --message-user: #444654;
-            --message-bot: #343541;
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #3b82f6;
+            --sidebar: #1f2937;
+            --chat-bg: #111827;
+            --message-user: #374151;
+            --message-bot: #1e293b;
             --text-primary: #ffffff;
             --text-secondary: #d1d5db;
             --text-muted: #9ca3af;
             --border: #4b5563;
-            --input-bg: #40414f;
-            --user-bubble: #10a37f;
-            --bot-bubble: #565869;
+            --input-bg: #374151;
+            --user-bubble: #10b981;
+            --bot-bubble: #475569;
             --voice-active: #ef4444;
+            --emergency-color: #ef4444;
+            --warning-color: #f59e0b;
+            --success-color: #10b981;
+            --header-height: 60px;
+            --footer-height: 70px;
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
@@ -39,6 +46,37 @@
         .app-container {
             display: flex;
             height: 100vh;
+            position: relative;
+        }
+        
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            height: var(--header-height);
+            background-color: var(--sidebar);
+            padding: 0 16px;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        
+        .mobile-menu-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+        }
+        
+        .mobile-title {
+            font-size: 18px;
+            font-weight: 600;
         }
         
         /* Sidebar Styles */
@@ -48,6 +86,33 @@
             display: flex;
             flex-direction: column;
             border-right: 1px solid var(--border);
+            transition: transform 0.3s ease;
+            z-index: 50;
+        }
+        
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .sidebar-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
         }
         
         .new-chat-btn {
@@ -116,7 +181,7 @@
             width: 32px;
             height: 32px;
             border-radius: 4px;
-            background: linear-gradient(135deg, var(--primary), #2563eb);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -143,6 +208,16 @@
         .chat-title {
             font-size: 18px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .specialty-indicator {
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background-color: var(--secondary);
         }
         
         .model-selector {
@@ -197,11 +272,11 @@
         }
         
         .user-avatar {
-            background: linear-gradient(135deg, #10a37f, #0d8c6c);
+            background: linear-gradient(135deg, var(--user-bubble), var(--primary-dark));
         }
         
         .bot-avatar {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
         }
         
         .message-content {
@@ -231,21 +306,48 @@
             opacity: 0.8;
         }
         
+        /* Medical Alert Styling */
+        .medical-alert {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-left: 4px solid var(--emergency-color);
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+        
+        .medical-warning {
+            background-color: rgba(245, 158, 11, 0.2);
+            border-left: 4px solid var(--warning-color);
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+        
+        .medical-advice {
+            background-color: rgba(16, 185, 129, 0.2);
+            border-left: 4px solid var(--success-color);
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+        
         /* Input Area */
         .input-container {
-            padding: 24px;
+            padding: 16px;
             position: relative;
+            background-color: var(--sidebar);
+            border-top: 1px solid var(--border);
         }
         
         .input-wrapper {
             position: relative;
-            max-width: 768px;
+            max-width: 100%;
             margin: 0 auto;
         }
         
         .user-input {
             width: 100%;
-            padding: 16px 48px 16px 16px;
+            padding: 12px 44px 12px 12px;
             background-color: var(--input-bg);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -254,8 +356,8 @@
             resize: none;
             outline: none;
             line-height: 1.5;
-            max-height: 200px;
-            min-height: 56px;
+            max-height: 120px;
+            min-height: 44px;
         }
         
         .user-input:focus {
@@ -264,10 +366,10 @@
         
         .input-buttons {
             position: absolute;
-            right: 12px;
-            bottom: 12px;
+            right: 8px;
+            bottom: 8px;
             display: flex;
-            gap: 8px;
+            gap: 4px;
         }
         
         .input-btn {
@@ -280,6 +382,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 32px;
+            height: 32px;
         }
         
         .input-btn:hover {
@@ -305,22 +409,25 @@
         .voice-controls {
             display: flex;
             justify-content: center;
-            gap: 16px;
-            margin-top: 16px;
+            gap: 12px;
+            margin-top: 12px;
+            flex-wrap: wrap;
         }
         
         .voice-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
+            gap: 6px;
+            padding: 10px 14px;
             background-color: var(--input-bg);
             border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text-primary);
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 13px;
+            min-width: 80px;
         }
         
         .voice-btn:hover {
@@ -333,11 +440,11 @@
         }
         
         .voice-btn i {
-            font-size: 24px;
+            font-size: 18px;
         }
         
         .voice-btn-text {
-            font-size: 14px;
+            font-size: 12px;
         }
         
         /* Voice Visualization */
@@ -345,13 +452,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             margin-top: 8px;
             height: 20px;
         }
         
         .voice-bar {
-            width: 4px;
+            width: 3px;
             height: 4px;
             background-color: var(--text-muted);
             border-radius: 2px;
@@ -362,99 +469,17 @@
             background-color: var(--voice-active);
         }
         
-        /* Reasoning Panel */
-        .reasoning-panel {
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 320px;
-            background-color: var(--sidebar);
-            border-left: 1px solid var(--border);
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .reasoning-panel.open {
-            transform: translateX(0);
-        }
-        
-        .reasoning-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .reasoning-title {
-            font-size: 16px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .close-reasoning {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-        }
-        
-        .close-reasoning:hover {
-            color: var(--text-primary);
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .reasoning-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-        }
-        
-        .reasoning-step {
-            margin-bottom: 16px;
-            padding: 12px;
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            border-left: 3px solid var(--primary);
-        }
-        
-        .step-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-        
-        .step-time {
-            color: var(--text-muted);
-            font-size: 12px;
-        }
-        
-        .step-content {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-        
         /* Status and Typing Indicators */
         .status-bar {
-            padding: 8px 24px;
+            padding: 8px 16px;
             background-color: var(--sidebar);
             border-top: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
+            height: var(--footer-height);
         }
         
         .status {
@@ -509,68 +534,515 @@
             40% { transform: scale(1); opacity: 1; }
         }
         
-        .toggle-reasoning {
-            background: transparent;
+        /* Welcome Screen */
+        .welcome-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--chat-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .welcome-content {
+            max-width: 600px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            width: 100%;
+        }
+        
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .welcome-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .user-info-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background-color: var(--sidebar);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            max-width: 400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: left;
+        }
+        
+        .form-group input, .form-group select {
+            padding: 12px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+        }
+        
+        .start-chat-btn {
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border: none;
-            color: var(--text-muted);
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 4px;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+        
+        .start-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Medical Tools Section */
+        .medical-tools {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .tool-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 12px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+            min-width: 70px;
+        }
+        
+        .tool-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .tool-btn i {
+            font-size: 18px;
+        }
+        
+        /* Emergency Notice */
+        .emergency-notice {
+            background-color: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--emergency-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 16px 0;
+            text-align: center;
             font-size: 14px;
         }
         
-        .toggle-reasoning:hover {
-            color: var(--text-primary);
-            background-color: rgba(255, 255, 255, 0.1);
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 40;
         }
         
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
+        /* Responsive Design */
+        /* Tablets */
+        @media (max-width: 1024px) {
             .sidebar {
-                position: absolute;
+                width: 240px;
+            }
+            
+            .message-content {
+                max-width: 80%;
+            }
+            
+            .chat-header {
+                padding: 16px;
+            }
+            
+            .messages-container {
+                padding: 16px;
+            }
+        }
+        
+        /* Mobile Devices */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .mobile-header {
+                display: flex;
+            }
+            
+            .sidebar {
+                position: fixed;
+                top: 0;
                 left: -260px;
-                z-index: 10;
-                transition: left 0.3s ease;
+                bottom: 0;
+                z-index: 50;
+                width: 260px;
             }
             
             .sidebar.open {
                 left: 0;
             }
             
-            .reasoning-panel {
-                width: 100%;
+            .sidebar-overlay.active {
+                display: block;
+            }
+            
+            .main-content {
+                margin-top: var(--header-height);
+                margin-bottom: var(--footer-height);
+            }
+            
+            .chat-header {
+                display: none;
+            }
+            
+            .messages-container {
+                padding: 12px;
             }
             
             .message-content {
                 max-width: 85%;
             }
             
+            .input-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 12px;
+                z-index: 30;
+            }
+            
+            .status-bar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 20;
+            }
+            
             .voice-controls {
-                flex-direction: column;
                 gap: 8px;
+            }
+            
+            .voice-btn {
+                padding: 8px 10px;
+                min-width: 70px;
+                font-size: 12px;
+            }
+            
+            .medical-tools {
+                gap: 6px;
+            }
+            
+            .tool-btn {
+                padding: 8px 10px;
+                min-width: 65px;
+                font-size: 11px;
+            }
+            
+            .welcome-content {
+                padding: 0 16px;
+            }
+            
+            .welcome-title {
+                font-size: 28px;
+            }
+            
+            .welcome-subtitle {
+                font-size: 16px;
+            }
+            
+            .user-info-form {
+                padding: 20px;
+            }
+        }
+        
+        /* Small Mobile Devices */
+        @media (max-width: 480px) {
+            .message-content {
+                max-width: 90%;
+            }
+            
+            .messages-container {
+                padding: 8px;
+                gap: 12px;
+            }
+            
+            .message-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+            
+            .message-content {
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+            
+            .voice-controls {
+                gap: 6px;
+            }
+            
+            .voice-btn {
+                padding: 6px 8px;
+                min-width: 60px;
+                font-size: 11px;
+            }
+            
+            .medical-tools {
+                gap: 4px;
+            }
+            
+            .tool-btn {
+                padding: 6px 8px;
+                min-width: 60px;
+                font-size: 10px;
+            }
+            
+            .tool-btn i {
+                font-size: 16px;
+            }
+            
+            .status-bar {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .welcome-title {
+                font-size: 24px;
+            }
+            
+            .welcome-subtitle {
+                font-size: 15px;
+            }
+            
+            .user-info-form {
+                padding: 16px;
+            }
+        }
+        
+        /* Very Small Mobile Devices */
+        @media (max-width: 360px) {
+            .mobile-header {
+                padding: 0 12px;
+            }
+            
+            .mobile-title {
+                font-size: 16px;
+            }
+            
+            .messages-container {
+                padding: 6px;
+            }
+            
+            .message-content {
+                max-width: 95%;
+                padding: 8px 12px;
+            }
+            
+            .input-container {
+                padding: 10px;
+            }
+            
+            .user-input {
+                padding: 10px 40px 10px 10px;
+                font-size: 15px;
+            }
+            
+            .voice-controls {
+                gap: 4px;
+            }
+            
+            .voice-btn {
+                padding: 6px;
+                min-width: 55px;
+            }
+            
+            .medical-tools {
+                gap: 3px;
+            }
+            
+            .tool-btn {
+                padding: 6px;
+                min-width: 55px;
+            }
+        }
+        
+        /* Landscape Mode for Mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .welcome-screen {
+                padding: 10px;
+                overflow-y: auto;
+            }
+            
+            .welcome-content {
+                gap: 16px;
+            }
+            
+            .welcome-title {
+                font-size: 24px;
+            }
+            
+            .welcome-subtitle {
+                font-size: 14px;
+            }
+            
+            .user-info-form {
+                padding: 16px;
+                max-width: 350px;
+            }
+            
+            .messages-container {
+                padding: 8px;
+            }
+            
+            .input-container {
+                padding: 8px;
+            }
+            
+            .medical-tools {
+                margin-top: 8px;
+            }
+        }
+        
+        /* High DPI Screens */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .message-content {
+                border-radius: 20px;
+            }
+            
+            .tool-btn, .voice-btn {
+                border-radius: 10px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="mobile-menu-btn" id="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="mobile-title">Dr. GenZ</div>
+        <div style="width: 40px;"></div> <!-- Spacer for balance -->
+    </div>
+    
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    
     <div class="app-container">
+        <!-- Welcome Screen -->
+        <div class="welcome-screen" id="welcome-screen">
+            <div class="welcome-content">
+                <h1 class="welcome-title">Dr. GenZ</h1>
+                <p class="welcome-subtitle">Your AI Smart Doctor, ready to provide personalized medical guidance and health insights. Please note: This is an AI assistant, not a replacement for professional medical care.</p>
+                
+                <div class="emergency-notice">
+                    <strong><i class="fas fa-exclamation-triangle"></i> Medical Emergency Notice:</strong> If you're experiencing a medical emergency, please call your local emergency services immediately.
+                </div>
+                
+                <div class="user-info-form" id="user-info-form">
+                    <div class="form-group">
+                        <label for="user-name"><i class="fas fa-user"></i> What's your name?</label>
+                        <input type="text" id="user-name" placeholder="Enter your name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="user-age"><i class="fas fa-calendar-alt"></i> Your Age</label>
+                        <input type="number" id="user-age" placeholder="Enter your age" min="1" max="120">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="user-gender"><i class="fas fa-venus-mars"></i> Gender</label>
+                        <select id="user-gender">
+                            <option value="">Select your gender</option>
+                            <option value="female">Female</option>
+                            <option value="male">Male</option>
+                            <option value="other">Other</option>
+                            <option value="prefer-not-to-say">Prefer not to say</option>
+                        </select>
+                    </div>
+                    
+                    <button class="start-chat-btn" id="start-chat-btn">
+                        <i class="fas fa-comment-medical"></i> Start Consultation
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">D</div>
+                <div class="sidebar-title">Dr. GenZ</div>
+            </div>
+            
             <button class="new-chat-btn">
-                <i>+</i> New Chat
+                <i class="fas fa-plus"></i> New Consultation
             </button>
             <div class="history">
-                <div class="history-item">Discussing AI ethics and future implications</div>
-                <div class="history-item">Planning a machine learning project roadmap</div>
-                <div class="history-item">Exploring quantum computing applications</div>
-                <div class="history-item">Brainstorming startup ideas in tech</div>
+                <div class="history-item"><i class="fas fa-head-side-cough"></i> Headache and fatigue consultation</div>
+                <div class="history-item"><i class="fas fa-allergies"></i> Seasonal allergy symptoms</div>
+                <div class="history-item"><i class="fas fa-bed"></i> Sleep quality assessment</div>
+                <div class="history-item"><i class="fas fa-apple-alt"></i> Diet and nutrition advice</div>
+                <div class="history-item"><i class="fas fa-heartbeat"></i> Heart palpitations discussion</div>
+                <div class="history-item"><i class="fas fa-lungs"></i> Breathing difficulties evaluation</div>
             </div>
             <div class="sidebar-footer">
                 <div class="user-info">
-                    <div class="user-avatar">BA</div>
+                    <div class="user-avatar">D</div>
                     <div>
-                        <div style="font-weight: 600;">Brian Agallo</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">AI Assistant</div>
+                        <div style="font-weight: 600;">Dr. GenZ</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">AI Medical Assistant</div>
                     </div>
                 </div>
             </div>
@@ -579,37 +1051,58 @@
         <!-- Main Chat Area -->
         <div class="main-content">
             <div class="chat-header">
-                <div class="chat-title">Brian Agallo</div>
+                <div class="chat-title">
+                    Dr. GenZ
+                    <div class="specialty-indicator" id="specialty-indicator">General Medicine</div>
+                </div>
                 <div class="model-selector">
-                    <label>Model:</label>
+                    <label>Specialty:</label>
                     <select id="model-select">
-                        <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant</option>
-                        <option value="llama-3.1-70b-versatile">Llama 3.1 70B Versatile</option>
-                        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-                        <option value="gemma2-9b-it">Gemma2 9B</option>
+                        <option value="general">General Medicine</option>
+                        <option value="pediatrics">Pediatrics</option>
+                        <option value="cardiology">Cardiology</option>
+                        <option value="dermatology">Dermatology</option>
+                        <option value="mental">Mental Health</option>
                     </select>
                 </div>
             </div>
             
             <div class="messages-container" id="messages-container">
-                <div class="message bot-message">
-                    <div class="message-avatar bot-avatar">BA</div>
-                    <div class="message-content">
-                        <div class="message-sender">Brian Agallo</div>
-                        <div>Hello! I'm Brian Agallo, your professional AI assistant. I'm here to help you with reasoning, analysis, problem-solving, and much more. You can chat with me using text or voice!</div>
-                    </div>
-                </div>
+                <!-- Messages will be added here dynamically -->
+            </div>
+            
+            <div class="medical-tools">
+                <button class="tool-btn" id="symptom-checker-btn">
+                    <i class="fas fa-stethoscope"></i>
+                    <span>Symptom Checker</span>
+                </button>
+                <button class="tool-btn" id="health-tracker-btn">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Health Tracker</span>
+                </button>
+                <button class="tool-btn" id="diagnostic-assistant-btn">
+                    <i class="fas fa-microscope"></i>
+                    <span>Diagnostic Assistant</span>
+                </button>
+                <button class="tool-btn" id="preventive-care-btn">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Preventive Care</span>
+                </button>
+                <button class="tool-btn" id="medication-btn">
+                    <i class="fas fa-pills"></i>
+                    <span>Medications</span>
+                </button>
             </div>
             
             <div class="input-container">
                 <div class="input-wrapper">
-                    <textarea class="user-input" id="user-input" placeholder="Message Brian Agallo..." rows="1"></textarea>
+                    <textarea class="user-input" id="user-input" placeholder="Describe your symptoms or health concerns..." rows="1"></textarea>
                     <div class="input-buttons">
                         <button class="input-btn" id="voice-input-btn" title="Voice Input">
-                            <i>🎤</i>
+                            <i class="fas fa-microphone"></i>
                         </button>
                         <button class="input-btn send-btn" id="send-btn">
-                            <i>↑</i>
+                            <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
                 </div>
@@ -617,16 +1110,16 @@
                 <!-- Voice Controls -->
                 <div class="voice-controls">
                     <button class="voice-btn" id="start-voice-btn">
-                        <i>🎤</i>
-                        <span class="voice-btn-text">Start Voice Chat</span>
+                        <i class="fas fa-microphone"></i>
+                        <span class="voice-btn-text">Voice Input</span>
                     </button>
                     <button class="voice-btn" id="stop-voice-btn" disabled>
-                        <i>⏹️</i>
+                        <i class="fas fa-stop"></i>
                         <span class="voice-btn-text">Stop Voice</span>
                     </button>
                     <button class="voice-btn" id="toggle-speech-btn">
-                        <i>🔊</i>
-                        <span class="voice-btn-text">Speech: ON</span>
+                        <i class="fas fa-volume-up"></i>
+                        <span class="voice-btn-text">Voice: ON</span>
                     </button>
                 </div>
                 
@@ -648,35 +1141,15 @@
             <div class="status-bar">
                 <div class="status">
                     <div class="status-dot" id="status-dot"></div>
-                    <span id="status-text">Ready for your input</span>
+                    <span id="status-text">Ready for consultation</span>
                 </div>
                 <div class="typing-indicator" id="typing-indicator" style="display: none;">
-                    <span>Brian is thinking</span>
+                    <span>Dr. GenZ is analyzing</span>
                     <div class="typing-dots">
                         <div class="typing-dot"></div>
                         <div class="typing-dot"></div>
                         <div class="typing-dot"></div>
                     </div>
-                </div>
-                <button class="toggle-reasoning" id="toggle-reasoning">Show Reasoning</button>
-            </div>
-        </div>
-        
-        <!-- Reasoning Panel -->
-        <div class="reasoning-panel" id="reasoning-panel">
-            <div class="reasoning-header">
-                <div class="reasoning-title">
-                    <i>🧠</i> Brian's Reasoning Process
-                </div>
-                <button class="close-reasoning" id="close-reasoning">×</button>
-            </div>
-            <div class="reasoning-content" id="reasoning-content">
-                <div class="reasoning-step">
-                    <div class="step-header">
-                        <span>System Initialized</span>
-                        <span class="step-time" id="current-time"></span>
-                    </div>
-                    <div class="step-content">Brian Agallo is ready. Waiting for user input to begin reasoning process.</div>
                 </div>
             </div>
         </div>
@@ -684,6 +1157,12 @@
 
     <script>
         // DOM Elements
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const userInfoForm = document.getElementById('user-info-form');
+        const userNameInput = document.getElementById('user-name');
+        const userAgeInput = document.getElementById('user-age');
+        const userGenderSelect = document.getElementById('user-gender');
+        const startChatBtn = document.getElementById('start-chat-btn');
         const messagesContainer = document.getElementById('messages-container');
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
@@ -695,25 +1174,32 @@
         const statusText = document.getElementById('status-text');
         const statusDot = document.getElementById('status-dot');
         const typingIndicator = document.getElementById('typing-indicator');
-        const reasoningContent = document.getElementById('reasoning-content');
-        const reasoningPanel = document.getElementById('reasoning-panel');
-        const toggleReasoningBtn = document.getElementById('toggle-reasoning');
-        const closeReasoningBtn = document.getElementById('close-reasoning');
-        const currentTimeEl = document.getElementById('current-time');
+        const specialtyIndicator = document.getElementById('specialty-indicator');
         const modelSelect = document.getElementById('model-select');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        // Medical tool buttons
+        const symptomCheckerBtn = document.getElementById('symptom-checker-btn');
+        const healthTrackerBtn = document.getElementById('health-tracker-btn');
+        const diagnosticAssistantBtn = document.getElementById('diagnostic-assistant-btn');
+        const preventiveCareBtn = document.getElementById('preventive-care-btn');
+        const medicationBtn = document.getElementById('medication-btn');
+        
+        // User information
+        let userName = '';
+        let userAge = '';
+        let userGender = '';
+        let isChatStarted = false;
         
         // Voice settings
         let isSpeechEnabled = true;
         let isVoiceActive = false;
         let voiceBars = [];
         
-        // Update current time
-        function updateTime() {
-            const now = new Date();
-            currentTimeEl.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }
-        setInterval(updateTime, 1000);
-        updateTime();
+        // Mobile sidebar state
+        let isSidebarOpen = false;
         
         // API Configuration for Groq
         const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
@@ -728,20 +1214,7 @@
         };
         
         // Conversation history
-        let conversationHistory = [
-            {
-                role: "system",
-                content: `You are Brian Agallo, a professional AI assistant with advanced reasoning capabilities. 
-                You have a personality that is professional yet approachable.
-                Always think step by step before answering. 
-                Provide clear, accurate, and helpful responses.
-                If you need to reason through something, explain your thought process.
-                Keep responses conversational but informative.
-                Be concise but thorough in your explanations.
-                You enjoy helping people solve problems and learn new things.
-                When appropriate, you can share insights about your reasoning process.`
-            }
-        ];
+        let conversationHistory = [];
         
         // Initialize voice visualization bars
         function initializeVoiceVisualizer() {
@@ -770,6 +1243,35 @@
             this.style.height = (this.scrollHeight) + 'px';
         });
         
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            isSidebarOpen = !isSidebarOpen;
+            sidebar.classList.toggle('open', isSidebarOpen);
+            sidebarOverlay.classList.toggle('active', isSidebarOpen);
+            
+            // Update menu icon
+            const menuIcon = mobileMenuBtn.querySelector('i');
+            if (isSidebarOpen) {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+            } else {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+        }
+        
+        mobileMenuBtn.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+        
+        // Close sidebar when clicking on a history item (mobile)
+        document.querySelectorAll('.history-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+        
         // Speech Recognition Setup
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
@@ -782,7 +1284,7 @@
             recognition.lang = 'en-US';
             
             recognition.onstart = function() {
-                statusText.textContent = "Listening... Speak now";
+                statusText.textContent = "Listening... Please describe your symptoms";
                 voiceInputBtn.style.color = "#ef4444";
                 startVoiceBtn.classList.add('active');
                 stopVoiceBtn.disabled = false;
@@ -818,7 +1320,7 @@
             
             recognition.onend = function() {
                 if (isListening) {
-                    statusText.textContent = "Processing your voice input...";
+                    statusText.textContent = "Processing your symptoms...";
                     voiceInputBtn.style.color = "";
                     startVoiceBtn.classList.remove('active');
                     stopVoiceBtn.disabled = true;
@@ -842,6 +1344,7 @@
         }
         
         // Event Listeners
+        startChatBtn.addEventListener('click', startChat);
         sendBtn.addEventListener('click', sendMessage);
         userInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -854,10 +1357,186 @@
         startVoiceBtn.addEventListener('click', startVoiceRecognition);
         stopVoiceBtn.addEventListener('click', stopVoiceRecognition);
         toggleSpeechBtn.addEventListener('click', toggleSpeech);
-        toggleReasoningBtn.addEventListener('click', toggleReasoningPanel);
-        closeReasoningBtn.addEventListener('click', closeReasoningPanel);
+        
+        // Medical tool button event listeners
+        symptomCheckerBtn.addEventListener('click', function() {
+            if (!isChatStarted) {
+                alert("Please complete the setup first.");
+                return;
+            }
+            addMessage("I'd like to use the symptom checker. What symptoms should I describe?", true);
+            setTimeout(() => {
+                addMessage("Of course. Please describe all your symptoms in detail, including when they started, their severity, and any factors that make them better or worse.", false);
+                if (isSpeechEnabled) {
+                    speakResponse("Of course. Please describe all your symptoms in detail, including when they started, their severity, and any factors that make them better or worse.");
+                }
+            }, 500);
+        });
+        
+        healthTrackerBtn.addEventListener('click', function() {
+            if (!isChatStarted) {
+                alert("Please complete the setup first.");
+                return;
+            }
+            addMessage("I want to track my health data.", true);
+            setTimeout(() => {
+                addMessage("Excellent. I can help you track various health metrics. Please share your current vitals like blood pressure, heart rate, weight, or any medications you're taking. You can also ask me to set reminders for medications or appointments.", false);
+                if (isSpeechEnabled) {
+                    speakResponse("Excellent. I can help you track various health metrics. Please share your current vitals like blood pressure, heart rate, weight, or any medications you're taking.");
+                }
+            }, 500);
+        });
+        
+        diagnosticAssistantBtn.addEventListener('click', function() {
+            if (!isChatStarted) {
+                alert("Please complete the setup first.");
+                return;
+            }
+            addMessage("I need help interpreting diagnostic results.", true);
+            setTimeout(() => {
+                addMessage("I can assist with understanding lab results or diagnostic reports. Please share the details of your test results, and I'll help explain what they might indicate. Remember, I can provide information but not medical diagnoses.", false);
+                if (isSpeechEnabled) {
+                    speakResponse("I can assist with understanding lab results or diagnostic reports. Please share the details of your test results, and I'll help explain what they might indicate.");
+                }
+            }, 500);
+        });
+        
+        preventiveCareBtn.addEventListener('click', function() {
+            if (!isChatStarted) {
+                alert("Please complete the setup first.");
+                return;
+            }
+            addMessage("I'd like preventive health advice.", true);
+            setTimeout(() => {
+                addMessage("Preventive care is essential for long-term health. Tell me about your lifestyle - diet, exercise, sleep patterns, stress levels, and any family medical history. I'll provide personalized recommendations for maintaining your health.", false);
+                if (isSpeechEnabled) {
+                    speakResponse("Preventive care is essential for long-term health. Tell me about your lifestyle - diet, exercise, sleep patterns, stress levels, and any family medical history.");
+                }
+            }, 500);
+        });
+        
+        medicationBtn.addEventListener('click', function() {
+            if (!isChatStarted) {
+                alert("Please complete the setup first.");
+                return;
+            }
+            addMessage("I have questions about medications.", true);
+            setTimeout(() => {
+                addMessage("I can provide information about medications, their uses, side effects, and interactions. Please tell me which medication you're asking about or describe your medication concerns. Remember to always consult with a healthcare provider before making any changes to your medications.", false);
+                if (isSpeechEnabled) {
+                    speakResponse("I can provide information about medications, their uses, side effects, and interactions. Please tell me which medication you're asking about or describe your medication concerns.");
+                }
+            }, 500);
+        });
         
         // Functions
+        function startChat() {
+            userName = userNameInput.value.trim();
+            userAge = userAgeInput.value.trim();
+            userGender = userGenderSelect.value;
+            
+            if (!userName) {
+                alert("Please enter your name to begin.");
+                return;
+            }
+            
+            if (!userAge) {
+                alert("Please enter your age for personalized medical advice.");
+                return;
+            }
+            
+            if (!userGender) {
+                alert("Please select your gender for appropriate medical guidance.");
+                return;
+            }
+            
+            // Hide welcome screen
+            welcomeScreen.style.display = 'none';
+            isChatStarted = true;
+            
+            // Set up the system message
+            const systemMessage = createSystemMessage();
+            conversationHistory = [systemMessage];
+            
+            // Add initial greeting from Dr. GenZ
+            addMessage(getInitialGreeting(), false);
+            
+            // Speak the greeting if speech is enabled
+            if (isSpeechEnabled) {
+                speakResponse(getInitialGreeting());
+            }
+            
+            statusText.textContent = `Consulting with ${userName}`;
+        }
+        
+        function createSystemMessage() {
+            const specialty = modelSelect.value;
+            let specialtyFocus = '';
+            
+            switch(specialty) {
+                case 'general':
+                    specialtyFocus = 'You are a general practitioner with broad medical knowledge.';
+                    break;
+                case 'pediatrics':
+                    specialtyFocus = 'You specialize in pediatric care and children\'s health.';
+                    break;
+                case 'cardiology':
+                    specialtyFocus = 'You specialize in heart health and cardiovascular conditions.';
+                    break;
+                case 'dermatology':
+                    specialtyFocus = 'You specialize in skin conditions and dermatological health.';
+                    break;
+                case 'mental':
+                    specialtyFocus = 'You specialize in mental health and psychological well-being.';
+                    break;
+            }
+            
+            return {
+                role: "system",
+                content: `You are Dr. GenZ, an AI medical assistant designed to provide health information and guidance.
+                The user is ${userName}, ${userAge} years old, who identifies as ${userGender}.
+                
+                ${specialtyFocus}
+                
+                IMPORTANT MEDICAL DISCLAIMER: You are an AI assistant, not a licensed medical professional. 
+                You cannot provide medical diagnoses, prescribe treatments, or replace professional medical care.
+                
+                Your role is to:
+                - Provide general health information and education
+                - Help users understand their symptoms
+                - Explain medical terms and conditions
+                - Offer lifestyle and wellness advice
+                - Guide users on when to seek professional medical care
+                
+                Always include appropriate medical disclaimers in your responses.
+                If symptoms suggest a serious condition, advise immediate medical attention.
+                Be empathetic, clear, and professional in your communication.
+                Ask follow-up questions to gather relevant health information.
+                Provide evidence-based information when possible.
+                Respect user privacy and maintain confidentiality.
+                
+                Current conversation context: ${userName} is seeking medical information and guidance.`
+            };
+        }
+        
+        function getInitialGreeting() {
+            const age = parseInt(userAge);
+            let ageGroup = '';
+            
+            if (age < 18) ageGroup = 'young';
+            else if (age < 40) ageGroup = 'adult';
+            else if (age < 65) ageGroup = 'middle-aged';
+            else ageGroup = 'senior';
+            
+            const greetings = [
+                `Hello ${userName}, I'm Dr. GenZ. I understand you're ${userAge} years old. I'm here to provide health information and guidance. Please remember that I'm an AI assistant, not a replacement for professional medical care. How can I help you today?`,
+                `Welcome ${userName}. I'm Dr. GenZ, your AI medical assistant. I see you're ${userAge} years old. I can help answer health questions and provide general medical information. What would you like to discuss?`,
+                `Good day ${userName}. I'm Dr. GenZ. As a ${ageGroup} individual aged ${userAge}, you may have specific health considerations. I'm here to provide information and guidance. What health concerns would you like to address?`
+            ];
+            
+            return greetings[Math.floor(Math.random() * greetings.length)];
+        }
+        
         function toggleVoiceRecognition() {
             if (!SpeechRecognition) {
                 statusText.textContent = "Speech recognition not supported in your browser";
@@ -893,18 +1572,18 @@
         function toggleSpeech() {
             isSpeechEnabled = !isSpeechEnabled;
             toggleSpeechBtn.querySelector('.voice-btn-text').textContent = 
-                `Speech: ${isSpeechEnabled ? 'ON' : 'OFF'}`;
+                `Voice: ${isSpeechEnabled ? 'ON' : 'OFF'}`;
             toggleSpeechBtn.style.backgroundColor = isSpeechEnabled ? '' : 'var(--text-muted)';
-        }
-        
-        function toggleReasoningPanel() {
-            reasoningPanel.classList.toggle('open');
-            toggleReasoningBtn.textContent = reasoningPanel.classList.contains('open') ? 'Hide Reasoning' : 'Show Reasoning';
-        }
-        
-        function closeReasoningPanel() {
-            reasoningPanel.classList.remove('open');
-            toggleReasoningBtn.textContent = 'Show Reasoning';
+            
+            // Update icon
+            const icon = toggleSpeechBtn.querySelector('i');
+            if (isSpeechEnabled) {
+                icon.classList.remove('fa-volume-mute');
+                icon.classList.add('fa-volume-up');
+            } else {
+                icon.classList.remove('fa-volume-up');
+                icon.classList.add('fa-volume-mute');
+            }
         }
         
         function addMessage(message, isUser = false) {
@@ -915,39 +1594,33 @@
             if (isUser) {
                 messageDiv.innerHTML = `
                     <div class="message-content">
-                        <div class="message-sender">You</div>
+                        <div class="message-sender">${userName}</div>
                         <div>${message}</div>
                     </div>
-                    <div class="message-avatar user-avatar">You</div>
+                    <div class="message-avatar user-avatar">${userName.charAt(0)}</div>
                 `;
             } else {
+                // Check if message contains medical alerts
+                let formattedMessage = message;
+                if (message.includes('EMERGENCY') || message.includes('urgent') || message.includes('immediately')) {
+                    formattedMessage = `<div class="medical-alert">${message}</div>`;
+                } else if (message.includes('warning') || message.includes('caution')) {
+                    formattedMessage = `<div class="medical-warning">${message}</div>`;
+                } else if (message.includes('advice') || message.includes('recommend')) {
+                    formattedMessage = `<div class="medical-advice">${message}</div>`;
+                }
+                
                 messageDiv.innerHTML = `
-                    <div class="message-avatar bot-avatar">BA</div>
+                    <div class="message-avatar bot-avatar">D</div>
                     <div class="message-content">
-                        <div class="message-sender">Brian Agallo</div>
-                        <div>${message}</div>
+                        <div class="message-sender">Dr. GenZ</div>
+                        <div>${formattedMessage}</div>
                     </div>
                 `;
             }
             
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-        
-        function addReasoningStep(step) {
-            const stepDiv = document.createElement('div');
-            stepDiv.classList.add('reasoning-step');
-            
-            stepDiv.innerHTML = `
-                <div class="step-header">
-                    <span>${step.title}</span>
-                    <span class="step-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                </div>
-                <div class="step-content">${step.content}</div>
-            `;
-            
-            reasoningContent.appendChild(stepDiv);
-            reasoningContent.scrollTop = reasoningContent.scrollHeight;
         }
         
         function showTypingIndicator() {
@@ -961,8 +1634,26 @@
         }
         
         async function sendMessage() {
+            if (!isChatStarted) {
+                alert("Please complete the setup first.");
+                return;
+            }
+            
             const message = userInput.value.trim();
             if (!message) return;
+            
+            // Check for emergency keywords
+            const emergencyKeywords = ['heart attack', 'stroke', 'chest pain', 'difficulty breathing', 'severe bleeding', 'unconscious', 'suicidal'];
+            const hasEmergency = emergencyKeywords.some(keyword => 
+                message.toLowerCase().includes(keyword.toLowerCase())
+            );
+            
+            if (hasEmergency) {
+                addMessage(`⚠️ MEDICAL EMERGENCY DETECTED: Based on your message, this may be a serious medical emergency. Please call your local emergency services (like 911) immediately or go to the nearest emergency room. Do not wait for a response from me.`, false);
+                if (isSpeechEnabled) {
+                    speakResponse("MEDICAL EMERGENCY DETECTED. Please call your local emergency services immediately or go to the nearest emergency room. Do not wait for a response from me.");
+                }
+            }
             
             // Add user message to chat
             addMessage(message, true);
@@ -977,31 +1668,15 @@
             
             // Show typing indicator
             showTypingIndicator();
-            statusText.textContent = "Brian is processing your request...";
+            statusText.textContent = "Dr. GenZ is analyzing your symptoms...";
             sendBtn.disabled = true;
             
             try {
-                // Clear previous reasoning
-                reasoningContent.innerHTML = '';
-                addReasoningStep({
-                    title: "Process Started",
-                    content: "Beginning to analyze your query and generate a response."
-                });
-                
-                // Step 1: Analyze the query
-                addReasoningStep({
-                    title: "Analyzing Query",
-                    content: `Understanding the intent behind: "${message}"`
-                });
-                
                 // Get selected model
-                const selectedModel = GROQ_MODELS[modelSelect.value];
+                const selectedModel = GROQ_MODELS["llama-3.1-8b-instant"];
                 
-                // Step 2: Generate response using Groq API
-                addReasoningStep({
-                    title: "Generating Response",
-                    content: `Using ${selectedModel} model to formulate an accurate and helpful response.`
-                });
+                // Update system message with current specialty
+                conversationHistory[0] = createSystemMessage();
                 
                 // Call Groq API
                 const response = await fetch(GROQ_API_URL, {
@@ -1027,7 +1702,7 @@
                 const data = await response.json();
                 
                 // Extract the generated text from the response
-                let botResponse = "I'm not sure how to respond to that.";
+                let botResponse = "I'm having trouble processing your request right now. Could you please rephrase your question?";
                 if (data && data.choices && data.choices[0] && data.choices[0].message) {
                     botResponse = data.choices[0].message.content;
                     
@@ -1038,32 +1713,13 @@
                     });
                     
                     // Limit conversation history to prevent token overflow
-                    if (conversationHistory.length > 10) {
+                    if (conversationHistory.length > 12) {
                         conversationHistory = [
                             conversationHistory[0], // Keep system message
-                            ...conversationHistory.slice(-8) // Keep last 8 exchanges
+                            ...conversationHistory.slice(-10) // Keep last 10 exchanges
                         ];
                     }
                 }
-                
-                // Add reasoning steps based on the response
-                if (botResponse.length > 100) {
-                    addReasoningStep({
-                        title: "Processing Information",
-                        content: "Analyzing the available information and structuring the response."
-                    });
-                    
-                    addReasoningStep({
-                        title: "Formulating Answer",
-                        content: "Creating a comprehensive and helpful response based on the analysis."
-                    });
-                }
-                
-                // Add final reasoning step
-                addReasoningStep({
-                    title: "Response Generated",
-                    content: "The response has been formulated and is ready to be delivered."
-                });
                 
                 // Add bot response to chat
                 addMessage(botResponse);
@@ -1072,7 +1728,7 @@
                 if (isSpeechEnabled) {
                     speakResponse(botResponse);
                 } else {
-                    statusText.textContent = "Response received";
+                    statusText.textContent = "Waiting for your response";
                     hideTypingIndicator();
                     sendBtn.disabled = false;
                 }
@@ -1081,22 +1737,16 @@
                 console.error("Error:", error);
                 hideTypingIndicator();
                 
-                // Add error to reasoning
-                addReasoningStep({
-                    title: "Error Occurred",
-                    content: `Failed to generate response: ${error.message}`
-                });
-                
                 // Fallback response if API fails
                 const fallbackResponses = [
-                    "I apologize, but I'm having trouble processing your request right now. Please try again.",
-                    "It seems there's a connection issue. Please check your internet connection and try again.",
-                    "I'm currently experiencing technical difficulties. Please try again in a moment."
+                    "I'm experiencing technical difficulties right now. Please try again in a moment.",
+                    "There seems to be a connection issue. Let's try that again.",
+                    "I apologize, but I'm having trouble processing your request. Could you please rephrase your question?"
                 ];
                 
                 const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
                 addMessage(randomResponse);
-                statusText.textContent = "Error: " + error.message;
+                statusText.textContent = "Connection issue - please try again";
                 sendBtn.disabled = false;
             }
         }
@@ -1110,31 +1760,29 @@
                 const cleanText = text.replace(/[#*\[\]_`]/g, '');
                 
                 const utterance = new SpeechSynthesisUtterance(cleanText);
-                utterance.rate = 1.0;
+                
+                // Medical professional voice settings
+                utterance.rate = 0.9;
                 utterance.pitch = 1.0;
                 utterance.volume = 0.8;
                 
                 utterance.onstart = function() {
-                    statusText.textContent = "Brian is speaking...";
+                    statusText.textContent = "Dr. GenZ is speaking...";
                 };
                 
                 utterance.onend = function() {
-                    statusText.textContent = "Ready for your input";
+                    statusText.textContent = "Waiting for your response";
                     statusDot.classList.remove('thinking');
                     voiceInputBtn.style.color = "";
                     isListening = false;
                     userInput.focus();
-                    addReasoningStep({
-                        title: "Response Delivered",
-                        content: "The response has been spoken and the conversation is ready to continue."
-                    });
                     hideTypingIndicator();
                     sendBtn.disabled = false;
                 };
                 
                 utterance.onerror = function(event) {
                     console.error("Speech synthesis error:", event);
-                    statusText.textContent = "Speech error, but response received";
+                    statusText.textContent = "Voice issue, but I've processed your request";
                     hideTypingIndicator();
                     sendBtn.disabled = false;
                 };
@@ -1142,7 +1790,7 @@
                 window.speechSynthesis.speak(utterance);
             } else {
                 // If speech synthesis is not available, just reset the UI
-                statusText.textContent = "Ready for your input";
+                statusText.textContent = "Waiting for your response";
                 statusDot.classList.remove('thinking');
                 userInput.focus();
                 hideTypingIndicator();
@@ -1153,14 +1801,28 @@
         // Initialize the voice visualizer
         initializeVoiceVisualizer();
         
-        // Initialize with a welcome message
-        window.onload = function() {
-            setTimeout(() => {
-                if ('speechSynthesis' in window && isSpeechEnabled) {
-                    speakResponse("Hello! I'm Brian Agallo, your professional AI assistant. I'm here to help you with reasoning, analysis, problem-solving, and much more. You can chat with me using text or voice!");
+        // Update specialty when changed
+        modelSelect.addEventListener('change', function() {
+            const specialtyText = this.options[this.selectedIndex].text;
+            specialtyIndicator.textContent = specialtyText;
+            
+            if (isChatStarted) {
+                conversationHistory[0] = createSystemMessage();
+                addMessage(`I've switched to ${specialtyText} mode. How can I assist you with your health concerns?`, false);
+                
+                if (isSpeechEnabled) {
+                    speakResponse(`I've switched to ${specialtyText} mode. How can I assist you with your health concerns?`);
                 }
-            }, 1000);
-        };
+            }
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            // Close sidebar on resize to desktop if open
+            if (window.innerWidth > 768 && isSidebarOpen) {
+                toggleSidebar();
+            }
+        });
     </script>
 </body>
 </html>
