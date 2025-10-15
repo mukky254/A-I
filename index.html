@@ -3,24 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brian Agallo - AI Assistant</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Brian Agallo - AI Assistant with Voice Chat</title>
     <style>
         :root {
             --primary: #10a37f;
             --primary-dark: #0d8c6c;
-            --primary-light: #e6f7f3;
-            --chat-bg: #ffffff;
-            --message-user-bg: #f7f7f8;
-            --message-bot-bg: #ffffff;
-            --message-user-border: #e5e5e5;
-            --message-bot-border: #e5e5e5;
-            --text-primary: #343541;
-            --text-secondary: #6e6e80;
-            --text-muted: #8e8ea0;
-            --border: #d9d9e3;
-            --input-bg: #ffffff;
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            --sidebar: #202123;
+            --chat-bg: #343541;
+            --message-user: #444654;
+            --message-bot: #343541;
+            --text-primary: #ffffff;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
+            --border: #4b5563;
+            --input-bg: #40414f;
+            --user-bubble: #10a37f;
+            --bot-bubble: #565869;
+            --voice-active: #ef4444;
         }
         
         * {
@@ -40,50 +39,110 @@
         .app-container {
             display: flex;
             height: 100vh;
-            flex-direction: column;
         }
         
-        /* Header Styles */
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+        }
+        
+        .new-chat-btn {
+            margin: 12px;
+            padding: 12px;
+            background-color: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+        
+        .new-chat-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .new-chat-btn i {
+            font-size: 16px;
+        }
+        
+        .history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+        
+        .history-item {
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .history-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .sidebar-footer {
+            padding: 12px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .user-info:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, var(--primary), #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        /* Main Chat Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
         .chat-header {
             padding: 16px 24px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            flex-shrink: 0;
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
         }
         
         .chat-title {
             font-size: 18px;
             font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .new-chat-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .new-chat-btn:hover {
-            background-color: var(--primary-dark);
         }
         
         .model-selector {
@@ -93,24 +152,13 @@
         }
         
         .model-selector select {
-            background-color: white;
+            background-color: var(--input-bg);
             color: var(--text-primary);
             border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px 12px;
+            border-radius: 4px;
+            padding: 6px 8px;
             font-size: 14px;
             outline: none;
-            cursor: pointer;
-        }
-        
-        /* Main Chat Area */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            background-color: var(--chat-bg);
-            overflow: hidden;
         }
         
         .messages-container {
@@ -119,15 +167,21 @@
             padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 24px;
-            background-color: var(--chat-bg);
+            gap: 16px;
         }
         
         .message {
             display: flex;
-            gap: 16px;
             max-width: 100%;
             line-height: 1.6;
+        }
+        
+        .user-message {
+            justify-content: flex-end;
+        }
+        
+        .bot-message {
+            justify-content: flex-start;
         }
         
         .message-avatar {
@@ -139,89 +193,61 @@
             justify-content: center;
             font-weight: bold;
             flex-shrink: 0;
-            font-size: 14px;
+            margin: 0 8px;
         }
         
         .user-avatar {
             background: linear-gradient(135deg, #10a37f, #0d8c6c);
-            color: white;
         }
         
         .bot-avatar {
             background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-            color: white;
         }
         
         .message-content {
-            flex: 1;
-            max-width: calc(100% - 48px);
-        }
-        
-        .message-bubble {
-            padding: 16px 20px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
             position: relative;
-            line-height: 1.6;
-            font-size: 15px;
+            word-wrap: break-word;
         }
         
-        .user-message .message-bubble {
-            background-color: var(--primary-light);
-            border: 1px solid var(--message-user-border);
+        .user-message .message-content {
+            background-color: var(--user-bubble);
+            color: white;
             border-bottom-right-radius: 4px;
-            color: var(--text-primary);
         }
         
-        .bot-message .message-bubble {
-            background-color: var(--message-bot-bg);
-            border: 1px solid var(--message-bot-border);
-            border-bottom-left-radius: 4px;
+        .bot-message .message-content {
+            background-color: var(--bot-bubble);
             color: var(--text-primary);
+            border-bottom-left-radius: 4px;
         }
         
         .message-sender {
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-size: 14px;
-            color: var(--text-secondary);
-        }
-        
-        .message-time {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 8px;
-            text-align: right;
-        }
-        
-        .bot-message .message-time {
-            text-align: left;
+            opacity: 0.8;
         }
         
         /* Input Area */
         .input-container {
             padding: 24px;
             position: relative;
-            background-color: white;
-            border-top: 1px solid var(--border);
-            flex-shrink: 0;
         }
         
         .input-wrapper {
             position: relative;
             max-width: 768px;
             margin: 0 auto;
-            background-color: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
         
         .user-input {
             width: 100%;
-            padding: 16px 52px 16px 16px;
+            padding: 16px 48px 16px 16px;
             background-color: var(--input-bg);
-            border: none;
+            border: 1px solid var(--border);
             border-radius: 12px;
             color: var(--text-primary);
             font-size: 16px;
@@ -249,17 +275,16 @@
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            padding: 6px;
-            border-radius: 6px;
+            padding: 4px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
         }
         
         .input-btn:hover {
             color: var(--text-primary);
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: rgba(255, 255, 255, 0.1);
         }
         
         .send-btn {
@@ -269,12 +294,72 @@
         
         .send-btn:hover {
             background-color: var(--primary-dark);
-            color: white;
         }
         
         .send-btn:disabled {
             background-color: var(--border);
             cursor: not-allowed;
+        }
+        
+        /* Voice Controls */
+        .voice-controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .voice-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .voice-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .voice-btn.active {
+            background-color: var(--voice-active);
+            color: white;
+        }
+        
+        .voice-btn i {
+            font-size: 24px;
+        }
+        
+        .voice-btn-text {
+            font-size: 14px;
+        }
+        
+        /* Voice Visualization */
+        .voice-visualizer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+            height: 20px;
+        }
+        
+        .voice-bar {
+            width: 4px;
+            height: 4px;
+            background-color: var(--text-muted);
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+        
+        .voice-bar.active {
+            background-color: var(--voice-active);
         }
         
         /* Reasoning Panel */
@@ -284,14 +369,12 @@
             top: 0;
             bottom: 0;
             width: 320px;
-            background-color: white;
+            background-color: var(--sidebar);
             border-left: 1px solid var(--border);
             transform: translateX(100%);
             transition: transform 0.3s ease;
             display: flex;
             flex-direction: column;
-            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
-            z-index: 10;
         }
         
         .reasoning-panel.open {
@@ -299,12 +382,11 @@
         }
         
         .reasoning-header {
-            padding: 16px 20px;
+            padding: 16px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: white;
         }
         
         .reasoning-title {
@@ -313,7 +395,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            color: var(--text-primary);
         }
         
         .close-reasoning {
@@ -321,32 +402,27 @@
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            padding: 6px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 4px;
+            border-radius: 4px;
         }
         
         .close-reasoning:hover {
             color: var(--text-primary);
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: rgba(255, 255, 255, 0.1);
         }
         
         .reasoning-content {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            background-color: #f9f9f9;
+            padding: 16px;
         }
         
         .reasoning-step {
             margin-bottom: 16px;
-            padding: 16px;
-            background-color: white;
-            border-radius: 12px;
-            border-left: 4px solid var(--primary);
-            box-shadow: var(--shadow);
+            padding: 12px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
         }
         
         .step-header {
@@ -371,15 +447,14 @@
         
         /* Status and Typing Indicators */
         .status-bar {
-            padding: 12px 24px;
-            background-color: white;
+            padding: 8px 24px;
+            background-color: var(--sidebar);
             border-top: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
             font-size: 14px;
             color: var(--text-muted);
-            flex-shrink: 0;
         }
         
         .status {
@@ -436,251 +511,154 @@
         
         .toggle-reasoning {
             background: transparent;
-            border: 1px solid var(--border);
+            border: none;
             color: var(--text-muted);
             cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 14px;
-            transition: all 0.2s;
         }
         
         .toggle-reasoning:hover {
             color: var(--text-primary);
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-        
-        /* Welcome Screen */
-        .welcome-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .welcome-title {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--text-primary);
-        }
-        
-        .welcome-subtitle {
-            font-size: 18px;
-            color: var(--text-secondary);
-            margin-bottom: 40px;
-            max-width: 600px;
-            line-height: 1.6;
-        }
-        
-        .capabilities-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 40px;
-            width: 100%;
-            max-width: 600px;
-        }
-        
-        .capability-item {
-            padding: 20px;
-            background-color: white;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            text-align: center;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        
-        .capability-item:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .capability-icon {
-            font-size: 24px;
-            margin-bottom: 12px;
-            color: var(--primary);
-        }
-        
-        .capability-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-        }
-        
-        .capability-desc {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-        
-        .start-chatting {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .start-chatting:hover {
-            background-color: var(--primary-dark);
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        /* Scrollbar Styling */
-        .messages-container::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .messages-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        .messages-container::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 10px;
-        }
-        
-        .messages-container::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+            background-color: rgba(255, 255, 255, 0.1);
         }
         
         /* Mobile Responsive */
         @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                left: -260px;
+                z-index: 10;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
             .reasoning-panel {
                 width: 100%;
             }
             
-            .messages-container {
-                padding: 16px;
+            .message-content {
+                max-width: 85%;
             }
             
-            .input-container {
-                padding: 16px;
-            }
-            
-            .capabilities-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .chat-header {
-                padding: 12px 16px;
-            }
-            
-            .header-left {
-                gap: 12px;
-            }
-            
-            .chat-title {
-                font-size: 16px;
+            .voice-controls {
+                flex-direction: column;
+                gap: 8px;
             }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
-        <div class="chat-header">
-            <div class="header-left">
-                <button class="new-chat-btn" id="new-chat-btn">
-                    <i class="fas fa-plus"></i> New Chat
-                </button>
-                <div class="chat-title" id="active-chat-title">Brian Agallo</div>
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <button class="new-chat-btn">
+                <i>+</i> New Chat
+            </button>
+            <div class="history">
+                <div class="history-item">Discussing AI ethics and future implications</div>
+                <div class="history-item">Planning a machine learning project roadmap</div>
+                <div class="history-item">Exploring quantum computing applications</div>
+                <div class="history-item">Brainstorming startup ideas in tech</div>
             </div>
-            <div class="model-selector">
-                <label>Model:</label>
-                <select id="model-select">
-                    <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant</option>
-                    <option value="llama-3.1-70b-versatile">Llama 3.1 70B Versatile</option>
-                    <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-                    <option value="gemma2-9b-it">Gemma2 9B</option>
-                </select>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">BA</div>
+                    <div>
+                        <div style="font-weight: 600;">Brian Agallo</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">AI Assistant</div>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Main Content -->
+        <!-- Main Chat Area -->
         <div class="main-content">
-            <!-- Welcome Screen (shown when no chat is active) -->
-            <div class="welcome-screen" id="welcome-screen">
-                <div class="welcome-title">Brian Agallo</div>
-                <div class="welcome-subtitle">Your professional AI assistant with advanced reasoning capabilities. I can help with analysis, problem-solving, research, and much more.</div>
-                
-                <div class="capabilities-grid">
-                    <div class="capability-item" data-prompt="Help me analyze this business problem...">
-                        <div class="capability-icon"><i class="fas fa-chart-line"></i></div>
-                        <div class="capability-title">Business Analysis</div>
-                        <div class="capability-desc">Strategic planning and decision support</div>
-                    </div>
-                    <div class="capability-item" data-prompt="Explain this technical concept...">
-                        <div class="capability-icon"><i class="fas fa-code"></i></div>
-                        <div class="capability-title">Technical Explanations</div>
-                        <div class="capability-desc">Clear breakdowns of complex topics</div>
-                    </div>
-                    <div class="capability-item" data-prompt="Help me draft a professional email about...">
-                        <div class="capability-icon"><i class="fas fa-envelope"></i></div>
-                        <div class="capability-title">Content Creation</div>
-                        <div class="capability-desc">Writing and editing assistance</div>
-                    </div>
-                    <div class="capability-item" data-prompt="Research the latest developments in...">
-                        <div class="capability-icon"><i class="fas fa-search"></i></div>
-                        <div class="capability-title">Research & Analysis</div>
-                        <div class="capability-desc">In-depth information gathering</div>
-                    </div>
+            <div class="chat-header">
+                <div class="chat-title">Brian Agallo</div>
+                <div class="model-selector">
+                    <label>Model:</label>
+                    <select id="model-select">
+                        <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant</option>
+                        <option value="llama-3.1-70b-versatile">Llama 3.1 70B Versatile</option>
+                        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                        <option value="gemma2-9b-it">Gemma2 9B</option>
+                    </select>
                 </div>
-                
-                <button class="start-chatting" id="start-chatting">Start Chatting</button>
             </div>
             
-            <!-- Chat Interface (hidden initially) -->
-            <div id="chat-interface" class="hidden">
-                <div class="messages-container" id="messages-container">
-                    <!-- Messages will be added here -->
+            <div class="messages-container" id="messages-container">
+                <div class="message bot-message">
+                    <div class="message-avatar bot-avatar">BA</div>
+                    <div class="message-content">
+                        <div class="message-sender">Brian Agallo</div>
+                        <div>Hello! I'm Brian Agallo, your professional AI assistant. I'm here to help you with reasoning, analysis, problem-solving, and much more. You can chat with me using text or voice!</div>
+                    </div>
                 </div>
-                
-                <div class="input-container">
-                    <div class="input-wrapper">
-                        <textarea class="user-input" id="user-input" placeholder="Message Brian Agallo..." rows="1"></textarea>
-                        <div class="input-buttons">
-                            <button class="input-btn" id="voice-btn" title="Voice Input">
-                                <i class="fas fa-microphone"></i>
-                            </button>
-                            <button class="input-btn send-btn" id="send-btn">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
+            </div>
+            
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea class="user-input" id="user-input" placeholder="Message Brian Agallo..." rows="1"></textarea>
+                    <div class="input-buttons">
+                        <button class="input-btn" id="voice-input-btn" title="Voice Input">
+                            <i>🎤</i>
+                        </button>
+                        <button class="input-btn send-btn" id="send-btn">
+                            <i>↑</i>
+                        </button>
                     </div>
                 </div>
                 
-                <div class="status-bar">
-                    <div class="status">
-                        <div class="status-dot" id="status-dot"></div>
-                        <span id="status-text">Ready for your input</span>
-                    </div>
-                    <div class="typing-indicator" id="typing-indicator" style="display: none;">
-                        <span>Brian is thinking</span>
-                        <div class="typing-dots">
-                            <div class="typing-dot"></div>
-                            <div class="typing-dot"></div>
-                            <div class="typing-dot"></div>
-                        </div>
-                    </div>
-                    <button class="toggle-reasoning" id="toggle-reasoning">Show Reasoning</button>
+                <!-- Voice Controls -->
+                <div class="voice-controls">
+                    <button class="voice-btn" id="start-voice-btn">
+                        <i>🎤</i>
+                        <span class="voice-btn-text">Start Voice Chat</span>
+                    </button>
+                    <button class="voice-btn" id="stop-voice-btn" disabled>
+                        <i>⏹️</i>
+                        <span class="voice-btn-text">Stop Voice</span>
+                    </button>
+                    <button class="voice-btn" id="toggle-speech-btn">
+                        <i>🔊</i>
+                        <span class="voice-btn-text">Speech: ON</span>
+                    </button>
                 </div>
+                
+                <!-- Voice Visualization -->
+                <div class="voice-visualizer" id="voice-visualizer" style="display: none;">
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                </div>
+            </div>
+            
+            <div class="status-bar">
+                <div class="status">
+                    <div class="status-dot" id="status-dot"></div>
+                    <span id="status-text">Ready for your input</span>
+                </div>
+                <div class="typing-indicator" id="typing-indicator" style="display: none;">
+                    <span>Brian is thinking</span>
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+                <button class="toggle-reasoning" id="toggle-reasoning">Show Reasoning</button>
             </div>
         </div>
         
@@ -688,11 +666,9 @@
         <div class="reasoning-panel" id="reasoning-panel">
             <div class="reasoning-header">
                 <div class="reasoning-title">
-                    <i class="fas fa-brain"></i> Brian's Reasoning Process
+                    <i>🧠</i> Brian's Reasoning Process
                 </div>
-                <button class="close-reasoning" id="close-reasoning">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button class="close-reasoning" id="close-reasoning">×</button>
             </div>
             <div class="reasoning-content" id="reasoning-content">
                 <div class="reasoning-step">
@@ -711,7 +687,11 @@
         const messagesContainer = document.getElementById('messages-container');
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
-        const voiceBtn = document.getElementById('voice-btn');
+        const voiceInputBtn = document.getElementById('voice-input-btn');
+        const startVoiceBtn = document.getElementById('start-voice-btn');
+        const stopVoiceBtn = document.getElementById('stop-voice-btn');
+        const toggleSpeechBtn = document.getElementById('toggle-speech-btn');
+        const voiceVisualizer = document.getElementById('voice-visualizer');
         const statusText = document.getElementById('status-text');
         const statusDot = document.getElementById('status-dot');
         const typingIndicator = document.getElementById('typing-indicator');
@@ -721,18 +701,19 @@
         const closeReasoningBtn = document.getElementById('close-reasoning');
         const currentTimeEl = document.getElementById('current-time');
         const modelSelect = document.getElementById('model-select');
-        const newChatBtn = document.getElementById('new-chat-btn');
-        const welcomeScreen = document.getElementById('welcome-screen');
-        const chatInterface = document.getElementById('chat-interface');
-        const startChattingBtn = document.getElementById('start-chatting');
-        const activeChatTitle = document.getElementById('active-chat-title');
-        const capabilityItems = document.querySelectorAll('.capability-item');
         
-        // State management
-        let currentChatId = null;
-        let chats = {};
-        let conversationHistory = [];
-        let isListening = false;
+        // Voice settings
+        let isSpeechEnabled = true;
+        let isVoiceActive = false;
+        let voiceBars = [];
+        
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            currentTimeEl.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
         
         // API Configuration for Groq
         const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
@@ -746,301 +727,253 @@
             "gemma2-9b-it": "gemma2-9b-it"
         };
         
-        // Initialize the app
-        function initApp() {
-            updateTime();
-            setInterval(updateTime, 1000);
-            
-            // Load any saved chats from localStorage
-            loadChats();
-            
-            // Set up event listeners
-            setupEventListeners();
+        // Conversation history
+        let conversationHistory = [
+            {
+                role: "system",
+                content: `You are Brian Agallo, a professional AI assistant with advanced reasoning capabilities. 
+                You have a personality that is professional yet approachable.
+                Always think step by step before answering. 
+                Provide clear, accurate, and helpful responses.
+                If you need to reason through something, explain your thought process.
+                Keep responses conversational but informative.
+                Be concise but thorough in your explanations.
+                You enjoy helping people solve problems and learn new things.
+                When appropriate, you can share insights about your reasoning process.`
+            }
+        ];
+        
+        // Initialize voice visualization bars
+        function initializeVoiceVisualizer() {
+            voiceBars = Array.from(voiceVisualizer.querySelectorAll('.voice-bar'));
         }
         
-        // Update current time
-        function updateTime() {
-            const now = new Date();
-            currentTimeEl.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }
-        
-        // Set up event listeners
-        function setupEventListeners() {
-            // Auto-resize textarea
-            userInput.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
-            });
+        // Update voice visualization
+        function updateVoiceVisualization(volume) {
+            if (!isVoiceActive) return;
             
-            // Send message on Enter (without Shift)
-            userInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
+            voiceBars.forEach((bar, index) => {
+                const shouldBeActive = index < Math.floor(volume / 10);
+                if (shouldBeActive) {
+                    bar.classList.add('active');
+                    bar.style.height = `${10 + (index * 5)}px`;
+                } else {
+                    bar.classList.remove('active');
+                    bar.style.height = '4px';
                 }
             });
-            
-            // Send button
-            sendBtn.addEventListener('click', sendMessage);
-            
-            // Voice button
-            voiceBtn.addEventListener('click', toggleVoiceRecognition);
-            
-            // Reasoning panel controls
-            toggleReasoningBtn.addEventListener('click', toggleReasoningPanel);
-            closeReasoningBtn.addEventListener('click', closeReasoningPanel);
-            
-            // New chat button
-            newChatBtn.addEventListener('click', createNewChat);
-            
-            // Start chatting button
-            startChattingBtn.addEventListener('click', createNewChat);
-            
-            // Capability items
-            capabilityItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const prompt = this.getAttribute('data-prompt');
-                    createNewChat();
-                    // Set the prompt in the input after a short delay
-                    setTimeout(() => {
-                        userInput.value = prompt;
-                        userInput.focus();
-                    }, 100);
-                });
-            });
-            
-            // Initialize speech recognition if available
-            initSpeechRecognition();
         }
         
-        // Initialize speech recognition
-        function initSpeechRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            let recognition;
+        // Auto-resize textarea
+        userInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+        
+        // Speech Recognition Setup
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+        let isListening = false;
+        
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
             
-            if (SpeechRecognition) {
-                recognition = new SpeechRecognition();
-                recognition.continuous = false;
-                recognition.interimResults = true;
-                recognition.lang = 'en-US';
+            recognition.onstart = function() {
+                statusText.textContent = "Listening... Speak now";
+                voiceInputBtn.style.color = "#ef4444";
+                startVoiceBtn.classList.add('active');
+                stopVoiceBtn.disabled = false;
+                isListening = true;
+                isVoiceActive = true;
+                voiceVisualizer.style.display = 'flex';
+            };
+            
+            recognition.onresult = function(event) {
+                const transcript = Array.from(event.results)
+                    .map(result => result[0])
+                    .map(result => result.transcript)
+                    .join('');
                 
-                recognition.onstart = function() {
-                    statusText.textContent = "Listening... Speak now";
-                    voiceBtn.style.color = "#ef4444";
-                    isListening = true;
-                };
+                userInput.value = transcript;
+                userInput.dispatchEvent(new Event('input'));
                 
-                recognition.onresult = function(event) {
-                    const transcript = Array.from(event.results)
-                        .map(result => result[0])
-                        .map(result => result.transcript)
-                        .join('');
-                    
-                    userInput.value = transcript;
-                    userInput.dispatchEvent(new Event('input'));
-                };
-                
-                recognition.onerror = function(event) {
-                    statusText.textContent = "Error: " + event.error;
-                    voiceBtn.style.color = "";
+                // Simulate voice visualization based on transcript length
+                const volume = Math.min(100, transcript.length * 2);
+                updateVoiceVisualization(volume);
+            };
+            
+            recognition.onerror = function(event) {
+                console.error("Speech recognition error:", event.error);
+                statusText.textContent = "Error: " + event.error;
+                voiceInputBtn.style.color = "";
+                startVoiceBtn.classList.remove('active');
+                stopVoiceBtn.disabled = true;
+                isListening = false;
+                isVoiceActive = false;
+                voiceVisualizer.style.display = 'none';
+            };
+            
+            recognition.onend = function() {
+                if (isListening) {
+                    statusText.textContent = "Processing your voice input...";
+                    voiceInputBtn.style.color = "";
+                    startVoiceBtn.classList.remove('active');
+                    stopVoiceBtn.disabled = true;
                     isListening = false;
-                };
-                
-                recognition.onend = function() {
-                    if (isListening) {
-                        statusText.textContent = "Processing your voice input...";
-                        voiceBtn.style.color = "";
-                        isListening = false;
-                        
-                        // Auto-send if there's text
-                        if (userInput.value.trim()) {
-                            setTimeout(() => {
-                                sendMessage();
-                            }, 500);
-                        }
+                    isVoiceActive = false;
+                    voiceVisualizer.style.display = 'none';
+                    
+                    // Auto-send if there's text
+                    if (userInput.value.trim()) {
+                        setTimeout(() => {
+                            sendMessage();
+                        }, 500);
                     }
-                };
-                
-                // Store recognition for later use
-                window.speechRecognition = recognition;
-            } else {
-                voiceBtn.disabled = true;
-                voiceBtn.title = "Speech Recognition not supported in your browser";
-            }
+                }
+            };
+        } else {
+            voiceInputBtn.disabled = true;
+            startVoiceBtn.disabled = true;
+            voiceInputBtn.title = "Speech Recognition not supported in your browser";
+            startVoiceBtn.title = "Speech Recognition not supported in your browser";
         }
         
-        // Toggle voice recognition
+        // Event Listeners
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        voiceInputBtn.addEventListener('click', toggleVoiceRecognition);
+        startVoiceBtn.addEventListener('click', startVoiceRecognition);
+        stopVoiceBtn.addEventListener('click', stopVoiceRecognition);
+        toggleSpeechBtn.addEventListener('click', toggleSpeech);
+        toggleReasoningBtn.addEventListener('click', toggleReasoningPanel);
+        closeReasoningBtn.addEventListener('click', closeReasoningPanel);
+        
+        // Functions
         function toggleVoiceRecognition() {
-            if (!window.speechRecognition) {
+            if (!SpeechRecognition) {
                 statusText.textContent = "Speech recognition not supported in your browser";
                 return;
             }
             
             if (isListening) {
-                window.speechRecognition.stop();
+                recognition.stop();
             } else {
                 userInput.value = '';
                 userInput.dispatchEvent(new Event('input'));
-                window.speechRecognition.start();
+                recognition.start();
             }
         }
         
-        // Create a new chat
-        function createNewChat() {
-            // Generate a unique ID for the chat
-            const chatId = 'chat_' + Date.now();
-            currentChatId = chatId;
-            
-            // Initialize the chat
-            chats[chatId] = {
-                id: chatId,
-                title: 'New Chat',
-                messages: [],
-                createdAt: new Date().toISOString(),
-                conversationHistory: [
-                    {
-                        role: "system",
-                        content: `You are Brian Agallo, a professional AI assistant with advanced reasoning capabilities. 
-                        You have a personality that is professional yet approachable.
-                        Always think step by step before answering. 
-                        Provide clear, accurate, and helpful responses.
-                        If you need to reason through something, explain your thought process.
-                        Keep responses conversational but informative.
-                        Be concise but thorough in your explanations.
-                        You enjoy helping people solve problems and learn new things.
-                        When appropriate, you can share insights about your reasoning process.`
-                    }
-                ]
-            };
-            
-            // Update UI
-            showChatInterface();
-            switchToChat(chatId);
-            
-            // Save to localStorage
-            saveChats();
-        }
-        
-        // Switch to a specific chat
-        function switchToChat(chatId) {
-            currentChatId = chatId;
-            const chat = chats[chatId];
-            
-            // Update conversation history
-            conversationHistory = [...chat.conversationHistory];
-            
-            // Update UI
-            activeChatTitle.textContent = chat.title;
-            renderMessages(chat.messages);
-        }
-        
-        // Show chat interface and hide welcome screen
-        function showChatInterface() {
-            welcomeScreen.classList.add('hidden');
-            chatInterface.classList.remove('hidden');
-        }
-        
-        // Show welcome screen and hide chat interface
-        function showWelcomeScreen() {
-            chatInterface.classList.add('hidden');
-            welcomeScreen.classList.remove('hidden');
-            currentChatId = null;
-            activeChatTitle.textContent = "Brian Agallo";
-        }
-        
-        // Render messages in the chat
-        function renderMessages(messages) {
-            messagesContainer.innerHTML = '';
-            
-            if (messages.length === 0) {
-                // Add a welcome message for new chats
-                addWelcomeMessage();
-            } else {
-                messages.forEach(message => {
-                    addMessageToUI(message.content, message.isUser, message.timestamp);
-                });
+        function startVoiceRecognition() {
+            if (!SpeechRecognition) {
+                statusText.textContent = "Speech recognition not supported in your browser";
+                return;
             }
             
-            // Scroll to the bottom of the conversation
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            userInput.value = '';
+            userInput.dispatchEvent(new Event('input'));
+            recognition.start();
         }
         
-        // Add a welcome message for new chats
-        function addWelcomeMessage() {
-            const welcomeMessage = {
-                content: "Hello! I'm Brian Agallo, your professional AI assistant. I'm here to help you with reasoning, analysis, problem-solving, and much more. How can I assist you today?",
-                isUser: false,
-                timestamp: new Date()
-            };
-            
-            addMessageToUI(welcomeMessage.content, welcomeMessage.isUser, welcomeMessage.timestamp);
-            chats[currentChatId].messages.push(welcomeMessage);
+        function stopVoiceRecognition() {
+            if (isListening) {
+                recognition.stop();
+            }
         }
         
-        // Add a message to the UI
-        function addMessageToUI(message, isUser = false, timestamp = null) {
+        function toggleSpeech() {
+            isSpeechEnabled = !isSpeechEnabled;
+            toggleSpeechBtn.querySelector('.voice-btn-text').textContent = 
+                `Speech: ${isSpeechEnabled ? 'ON' : 'OFF'}`;
+            toggleSpeechBtn.style.backgroundColor = isSpeechEnabled ? '' : 'var(--text-muted)';
+        }
+        
+        function toggleReasoningPanel() {
+            reasoningPanel.classList.toggle('open');
+            toggleReasoningBtn.textContent = reasoningPanel.classList.contains('open') ? 'Hide Reasoning' : 'Show Reasoning';
+        }
+        
+        function closeReasoningPanel() {
+            reasoningPanel.classList.remove('open');
+            toggleReasoningBtn.textContent = 'Show Reasoning';
+        }
+        
+        function addMessage(message, isUser = false) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message');
             messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
             
-            const time = timestamp || new Date();
-            const timeString = time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
             if (isUser) {
                 messageDiv.innerHTML = `
-                    <div class="message-avatar user-avatar">You</div>
                     <div class="message-content">
                         <div class="message-sender">You</div>
-                        <div class="message-bubble">${message}</div>
-                        <div class="message-time">${timeString}</div>
+                        <div>${message}</div>
                     </div>
+                    <div class="message-avatar user-avatar">You</div>
                 `;
             } else {
                 messageDiv.innerHTML = `
                     <div class="message-avatar bot-avatar">BA</div>
                     <div class="message-content">
                         <div class="message-sender">Brian Agallo</div>
-                        <div class="message-bubble">${message}</div>
-                        <div class="message-time">${timeString}</div>
+                        <div>${message}</div>
                     </div>
                 `;
             }
             
             messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
         
-        // Send a message
+        function addReasoningStep(step) {
+            const stepDiv = document.createElement('div');
+            stepDiv.classList.add('reasoning-step');
+            
+            stepDiv.innerHTML = `
+                <div class="step-header">
+                    <span>${step.title}</span>
+                    <span class="step-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                </div>
+                <div class="step-content">${step.content}</div>
+            `;
+            
+            reasoningContent.appendChild(stepDiv);
+            reasoningContent.scrollTop = reasoningContent.scrollHeight;
+        }
+        
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'flex';
+            statusDot.classList.add('thinking');
+        }
+        
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+            statusDot.classList.remove('thinking');
+        }
+        
         async function sendMessage() {
             const message = userInput.value.trim();
-            if (!message || !currentChatId) return;
+            if (!message) return;
             
-            // Add user message to UI
-            const userMessageTimestamp = new Date();
-            addMessageToUI(message, true, userMessageTimestamp);
-            
-            // Add to chat history
-            chats[currentChatId].messages.push({
-                content: message,
-                isUser: true,
-                timestamp: userMessageTimestamp
-            });
-            
-            // Update chat title if it's the first user message
-            if (chats[currentChatId].messages.filter(m => m.isUser).length === 1) {
-                const newTitle = message.length > 30 ? message.substring(0, 30) + '...' : message;
-                chats[currentChatId].title = newTitle;
-                activeChatTitle.textContent = newTitle;
-            }
+            // Add user message to chat
+            addMessage(message, true);
+            userInput.value = '';
+            userInput.style.height = 'auto';
             
             // Add to conversation history
             conversationHistory.push({
                 role: "user",
                 content: message
             });
-            
-            // Clear input
-            userInput.value = '';
-            userInput.style.height = 'auto';
             
             // Show typing indicator
             showTypingIndicator();
@@ -1104,9 +1037,6 @@
                         content: botResponse
                     });
                     
-                    // Update chat's conversation history
-                    chats[currentChatId].conversationHistory = [...conversationHistory];
-                    
                     // Limit conversation history to prevent token overflow
                     if (conversationHistory.length > 10) {
                         conversationHistory = [
@@ -1135,19 +1065,17 @@
                     content: "The response has been formulated and is ready to be delivered."
                 });
                 
-                // Add bot response to UI and chat history
-                const botMessageTimestamp = new Date();
-                addMessageToUI(botResponse, false, botMessageTimestamp);
-                chats[currentChatId].messages.push({
-                    content: botResponse,
-                    isUser: false,
-                    timestamp: botMessageTimestamp
-                });
+                // Add bot response to chat
+                addMessage(botResponse);
                 
-                // Speak the response
-                speakResponse(botResponse);
-                
-                statusText.textContent = "Response received";
+                // Speak the response if enabled
+                if (isSpeechEnabled) {
+                    speakResponse(botResponse);
+                } else {
+                    statusText.textContent = "Response received";
+                    hideTypingIndicator();
+                    sendBtn.disabled = false;
+                }
                 
             } catch (error) {
                 console.error("Error:", error);
@@ -1167,69 +1095,12 @@
                 ];
                 
                 const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
-                const errorTimestamp = new Date();
-                addMessageToUI(randomResponse, false, errorTimestamp);
-                chats[currentChatId].messages.push({
-                    content: randomResponse,
-                    isUser: false,
-                    timestamp: errorTimestamp
-                });
-                
+                addMessage(randomResponse);
                 statusText.textContent = "Error: " + error.message;
-            } finally {
-                hideTypingIndicator();
                 sendBtn.disabled = false;
-                
-                // Scroll to the bottom of the conversation
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                
-                // Save chats to localStorage
-                saveChats();
             }
         }
         
-        // Add a reasoning step
-        function addReasoningStep(step) {
-            const stepDiv = document.createElement('div');
-            stepDiv.classList.add('reasoning-step');
-            
-            stepDiv.innerHTML = `
-                <div class="step-header">
-                    <span>${step.title}</span>
-                    <span class="step-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                </div>
-                <div class="step-content">${step.content}</div>
-            `;
-            
-            reasoningContent.appendChild(stepDiv);
-            reasoningContent.scrollTop = reasoningContent.scrollHeight;
-        }
-        
-        // Show typing indicator
-        function showTypingIndicator() {
-            typingIndicator.style.display = 'flex';
-            statusDot.classList.add('thinking');
-        }
-        
-        // Hide typing indicator
-        function hideTypingIndicator() {
-            typingIndicator.style.display = 'none';
-            statusDot.classList.remove('thinking');
-        }
-        
-        // Toggle reasoning panel
-        function toggleReasoningPanel() {
-            reasoningPanel.classList.toggle('open');
-            toggleReasoningBtn.textContent = reasoningPanel.classList.contains('open') ? 'Hide Reasoning' : 'Show Reasoning';
-        }
-        
-        // Close reasoning panel
-        function closeReasoningPanel() {
-            reasoningPanel.classList.remove('open');
-            toggleReasoningBtn.textContent = 'Show Reasoning';
-        }
-        
-        // Speak response
         function speakResponse(text) {
             if ('speechSynthesis' in window) {
                 // Stop any ongoing speech
@@ -1250,7 +1121,7 @@
                 utterance.onend = function() {
                     statusText.textContent = "Ready for your input";
                     statusDot.classList.remove('thinking');
-                    voiceBtn.style.color = "";
+                    voiceInputBtn.style.color = "";
                     isListening = false;
                     userInput.focus();
                     addReasoningStep({
@@ -1258,6 +1129,14 @@
                         content: "The response has been spoken and the conversation is ready to continue."
                     });
                     hideTypingIndicator();
+                    sendBtn.disabled = false;
+                };
+                
+                utterance.onerror = function(event) {
+                    console.error("Speech synthesis error:", event);
+                    statusText.textContent = "Speech error, but response received";
+                    hideTypingIndicator();
+                    sendBtn.disabled = false;
                 };
                 
                 window.speechSynthesis.speak(utterance);
@@ -1267,34 +1146,21 @@
                 statusDot.classList.remove('thinking');
                 userInput.focus();
                 hideTypingIndicator();
+                sendBtn.disabled = false;
             }
         }
         
-        // Save chats to localStorage
-        function saveChats() {
-            localStorage.setItem('brianAgalloChats', JSON.stringify(chats));
-        }
+        // Initialize the voice visualizer
+        initializeVoiceVisualizer();
         
-        // Load chats from localStorage
-        function loadChats() {
-            const savedChats = localStorage.getItem('brianAgalloChats');
-            if (savedChats) {
-                chats = JSON.parse(savedChats);
-                
-                // If there are chats, show the most recent one
-                const chatIds = Object.keys(chats);
-                if (chatIds.length > 0) {
-                    const mostRecentChatId = chatIds.sort((a, b) => 
-                        new Date(chats[b].createdAt) - new Date(chats[a].createdAt)
-                    )[0];
-                    switchToChat(mostRecentChatId);
-                    showChatInterface();
+        // Initialize with a welcome message
+        window.onload = function() {
+            setTimeout(() => {
+                if ('speechSynthesis' in window && isSpeechEnabled) {
+                    speakResponse("Hello! I'm Brian Agallo, your professional AI assistant. I'm here to help you with reasoning, analysis, problem-solving, and much more. You can chat with me using text or voice!");
                 }
-            }
-        }
-        
-        // Initialize the app when the page loads
-        window.onload = initApp;
+            }, 1000);
+        };
     </script>
 </body>
 </html>
