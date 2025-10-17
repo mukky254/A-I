@@ -52,6 +52,7 @@ body {
     overscroll-behavior: contain;
     transform: translateZ(0);
     will-change: transform;
+    padding-bottom: 160px; /* Add padding to prevent messages from being hidden behind input */
 }
 
 /* Ensure body and containers allow natural scrolling */
@@ -395,12 +396,13 @@ body {
     border-radius: 4px;
 }
 
-/* Input Area */
+/* Input Area - FIXED POSITIONING */
 .input-container {
     padding: 16px;
-    position: relative;
     background-color: var(--sidebar);
     border-top: 1px solid var(--border);
+    position: relative;
+    z-index: 10;
 }
 
 .input-wrapper {
@@ -832,6 +834,7 @@ body {
     
     .messages-container {
         padding: 16px;
+        padding-bottom: 160px; /* Maintain bottom padding */
     }
 }
 
@@ -864,7 +867,7 @@ body {
     
     .main-content {
         margin-top: var(--header-height);
-        margin-bottom: var(--footer-height);
+        margin-bottom: 0; /* Remove bottom margin since input is fixed */
     }
     
     .chat-header {
@@ -877,6 +880,7 @@ body {
     
     .messages-container {
         padding: 12px;
+        padding-bottom: 200px; /* Increased padding for mobile to account for input area */
     }
     
     .message-content {
@@ -884,6 +888,7 @@ body {
         padding: 14px 18px;
     }
     
+    /* FIXED INPUT CONTAINER FOR MOBILE */
     .input-container {
         position: fixed;
         bottom: 0;
@@ -891,14 +896,20 @@ body {
         right: 0;
         padding: 12px;
         z-index: 30;
+        background-color: var(--sidebar);
+        border-top: 1px solid var(--border);
     }
     
     .status-bar {
         position: fixed;
-        bottom: 0;
+        bottom: 160px; /* Position above input container */
         left: 0;
         right: 0;
         z-index: 20;
+        background-color: transparent;
+        border-top: none;
+        padding: 8px 12px;
+        height: auto;
     }
     
     .voice-controls {
@@ -961,6 +972,7 @@ body {
     
     .messages-container {
         padding: 8px;
+        padding-bottom: 180px; /* Adjusted padding for smaller screens */
         gap: 12px;
     }
     
@@ -1002,6 +1014,7 @@ body {
     .status-bar {
         padding: 8px 12px;
         font-size: 12px;
+        bottom: 150px; /* Adjusted for smaller screens */
     }
     
     .welcome-title {
@@ -1029,6 +1042,7 @@ body {
     
     .messages-container {
         padding: 6px;
+        padding-bottom: 170px; /* Adjusted for very small screens */
     }
     
     .message-content {
@@ -1062,6 +1076,10 @@ body {
         padding: 6px;
         min-width: 55px;
     }
+    
+    .status-bar {
+        bottom: 140px; /* Adjusted for very small screens */
+    }
 }
 
 /* Landscape Mode for Mobile */
@@ -1090,6 +1108,7 @@ body {
     
     .messages-container {
         padding: 8px;
+        padding-bottom: 140px; /* Reduced padding for landscape */
     }
     
     .input-container {
@@ -1098,6 +1117,10 @@ body {
     
     .medical-tools {
         margin-top: 8px;
+    }
+    
+    .status-bar {
+        bottom: 120px; /* Adjusted for landscape */
     }
 }
 
@@ -1111,3 +1134,20 @@ body {
         border-radius: 10px;
     }
 }
+
+/* System message styling */
+.system-message {
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    margin: 10px 0;
+    font-size: 0.9em;
+    padding: 8px 16px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
