@@ -64,13 +64,13 @@ body {
 }
 
 /* Improve touch interactions for mobile */
-.message-content, .tool-btn, .voice-btn, .input-btn, .history-item, .new-chat-btn {
+.message-content, .tool-btn, .voice-btn, .input-btn, .history-item, .new-chat-btn, .sidebar-link {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
 }
 
 /* Prevent text selection on interactive elements */
-.user-input, .message-content, .tool-btn, .voice-btn {
+.user-input, .message-content, .tool-btn, .voice-btn, .sidebar-link {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -199,6 +199,44 @@ body {
 
 .history-item:hover {
     background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Sidebar Navigation Links */
+.sidebar-links {
+    padding: 12px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 12px 0;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s;
+    margin-bottom: 4px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.sidebar-link i {
+    width: 16px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.sidebar-link:last-child {
+    margin-bottom: 0;
 }
 
 .sidebar-footer {
@@ -952,6 +990,17 @@ body {
         padding: 20px;
     }
     
+    /* Sidebar links mobile adjustments */
+    .sidebar-link {
+        padding: 14px 12px;
+        font-size: 15px;
+        min-height: 44px;
+    }
+    
+    .sidebar-link i {
+        font-size: 16px;
+    }
+    
     /* Improve scrolling containers for mobile */
     .messages-container, .history {
         scrollbar-width: none;
@@ -1149,5 +1198,3 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
-
-
