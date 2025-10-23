@@ -413,7 +413,7 @@ function createSystemMessage() {
         You cannot provide medical diagnoses, prescribe treatments, or replace professional medical care.
         
         STRICT TOPIC RESTRICTIONS:
-        - ONLY answer questions related to: health, medicine, medications, symptoms, medical conditions, 
+        - ONLY answer questions related to: health, guidance, counselling, medicine, diseases, feelings, death, medications, symptoms, medical conditions, 
           emotional well-being, mental health, psychology, lifestyle factors affecting health
         - DO NOT answer questions about: coding, technology, programming, math, science (unless medical science),
           history, politics, entertainment, sports, or any other non-medical topics
@@ -596,17 +596,221 @@ async function sendMessage() {
     
     const message = userInput.value.trim();
     if (!message) return;
+
+    // Comprehensive medical keywords array
+const medicalKeywords = [
+    // Basic Medical Terms
+    'health', 'medicine', 'medical', 'symptom', 'pain', 'doctor', 'hospital',
+    'clinic', 'physician', 'nurse', 'patient', 'diagnosis', 'prognosis',
+    'examination', 'checkup', 'having', 'feeling', 'consultation', 'appointment', 'emergency',
     
-    // Client-side topic restriction check
-    const medicalKeywords = [
-        'health', 'medicine', 'medical', 'symptom', 'pain', 'doctor', 'hospital',
-        'medication', 'drug', 'pill', 'prescription', 'treatment', 'therapy',
-        'mental', 'emotional', 'stress', 'anxiety', 'depression', 'feeling',
-        'disease', 'condition', 'illness', 'sick', 'fever', 'headache',
-        'exercise', 'diet', 'nutrition', 'sleep', 'weight', 'blood', 'heart',
-        'lung', 'brain', 'body', 'physical', 'psychological', 'wellness',
-        'cough', 'cold', 'flu', 'infection', 'injury', 'ache', 'hurt'
-    ];
+    // Medications & Treatments
+    'medication', 'drug', 'pill', 'prescription', 'treatment', 'therapy',
+    'vaccine', 'vaccination', 'antibiotic', 'antiviral', 'antifungal',
+    'analgesic', 'painkiller', 'anti-inflammatory', 'steroid', 'insulin',
+    'chemotherapy', 'radiation', 'surgery', 'operation', 'recovery',
+    'rehabilitation', 'physical therapy', 'occupational therapy',
+    
+    // Mental & Emotional Health
+    'mental', 'emotional', 'psychological', 'psychiatric', 'therapy',
+    'counseling', 'psychologist', 'psychiatrist', 'therapist', 'counselor',
+    'stress', 'anxiety', 'depression', 'feeling', 'feel', 'emotion',
+    'sad', 'happy', 'angry', 'worried', 'scared', 'nervous', 'afraid',
+    'fear', 'panic', 'phobia', 'ocd', 'bipolar', 'schizophrenia', 'psychosis',
+    'trauma', 'ptsd', 'grief', 'loss', 'bereavement', 'mourning',
+    'lonely', 'isolated', 'overwhelmed', 'burnout', 'exhausted', 'fatigued',
+    'mood', 'mood swings', 'irritable', 'agitated', 'restless', 'lethargic',
+    'suicidal', 'self-harm', 'self-injury', 'eating disorder', 'anorexia',
+    'bulimia', 'binge', 'addiction', 'substance', 'alcohol', 'drug abuse',
+    'withdrawal', 'detox', 'recovery', 'sobriety', 'relapse',
+    
+    // Infectious Diseases
+    'cholera', 'malaria', 'dengue', 'covid', 'coronavirus', 'influenza',
+    'flu', 'tuberculosis', 'tb', 'hiv', 'aids', 'hepatitis', 'measles',
+    'mumps', 'rubella', 'chickenpox', 'shingles', 'herpes', 'hpv',
+    'strep', 'strep throat', 'meningitis', 'encephalitis', 'pneumonia',
+    'bronchitis', 'sinusitis', 'urinary infection', 'uti', 'sti', 'std',
+    'gonorrhea', 'syphilis', 'chlamydia', 'yeast infection', 'fungal',
+    'parasite', 'worm', 'tapeworm', 'ringworm', 'scabies', 'lice',
+    
+    // Chronic Diseases
+    'diabetes', 'cancer', 'heart disease', 'hypertension', 'high blood pressure',
+    'asthma', 'copd', 'arthritis', 'osteoporosis', 'osteopenia',
+    'alzheimer', 'dementia', 'parkinson', 'multiple sclerosis', 'ms',
+    'lupus', 'fibromyalgia', 'chronic fatigue', 'ibs', 'ibd',
+    'crohn', 'colitis', 'celiac', 'gluten', 'allergy', 'eczema', 'psoriasis',
+    'migraine', 'epilepsy', 'seizure', 'stroke', 'heart attack', 'mi',
+    'kidney disease', 'liver disease', 'cirrhosis', 'pancreatitis',
+    'thyroid', 'hypothyroidism', 'hyperthyroidism', 'hashimoto',
+    
+    // Common Symptoms & Complaints
+    'fever', 'headache', 'migraine', 'dizziness', 'vertigo', 'lightheaded',
+    'nausea', 'vomit', 'vomiting', 'diarrhea', 'constipation', 'bloating',
+    'gas', 'indigestion', 'heartburn', 'reflux', 'gerd', 'abdominal pain',
+    'stomach ache', 'cramps', 'bleeding', 'hemorrhage', 'bruise', 'bruising',
+    'swelling', 'edema', 'inflammation', 'redness', 'rash', 'hives',
+    'itch', 'itching', 'burning', 'stinging', 'numbness', 'tingling',
+    'weakness', 'fatigue', 'tired', 'exhausted', 'lethargy', 'malaise',
+    'insomnia', 'sleep', 'nightmare', 'night terror', 'sleepwalking',
+    'appetite', 'weight loss', 'weight gain', 'dehydration', 'thirst',
+    
+    // Body Systems & Organs
+    'heart', 'cardiac', 'lung', 'pulmonary', 'respiratory', 'breath',
+    'brain', 'neurological', 'nerve', 'nervous system', 'spinal',
+    'muscle', 'muscular', 'skeletal', 'bone', 'joint', 'ligament',
+    'tendon', 'skin', 'dermatological', 'hair', 'nail', 'eye',
+    'vision', 'visual', 'ear', 'hearing', 'auditory', 'nose',
+    'nasal', 'sinus', 'throat', 'oral', 'dental', 'tooth',
+    'gum', 'tongue', 'stomach', 'gastric', 'intestinal', 'bowel',
+    'liver', 'hepatic', 'kidney', 'renal', 'bladder', 'urinary',
+    'reproductive', 'genital', 'penis', 'vagina', 'vulva', 'ovary',
+    'uterine', 'cervical', 'prostate', 'testicular', 'breast',
+    
+    // Vital Signs & Measurements
+    'blood pressure', 'pulse', 'heart rate', 'respiratory rate',
+    'temperature', 'oxygen', 'saturation', 'spo2', 'glucose', 'sugar',
+    'cholesterol', 'triglyceride', 'hemoglobin', 'a1c', 'creatinine',
+    
+    // Diagnostic Terms
+    'x-ray', 'mri', 'ct scan', 'ultrasound', 'sonogram', 'biopsy',
+    'blood test', 'urine test', 'stool test', 'culture', 'sensitivity',
+    'biomarker', 'lab results', 'imaging', 'scan', 'screening',
+    
+    // Procedures & Interventions
+    'surgery', 'operation', 'procedure', 'incision', 'suture', 'stitch',
+    'dressing', 'bandage', 'cast', 'splint', 'injection', 'shot',
+    'iv', 'intravenous', 'drip', 'transfusion', 'dialysis', 'transplant',
+    
+    // Women's Health
+    'pregnancy', 'pregnant', 'prenatal', 'postpartum', 'menstrual',
+    'period', 'menstruation', 'pms', 'menopause', 'hormone', 'estrogen',
+    'progesterone', 'birth control', 'contraception', 'condom', 'iud',
+    'pap smear', 'mammogram', 'breast exam', 'pelvic exam', 'ovulation',
+    
+    // Men's Health
+    'testosterone', 'prostate', 'psa', 'erectile', 'impotence', 'viagra',
+    'circumcision', 'vasectomy', 'testicular', 'sperm', 'fertility',
+    
+    // Pediatric Health
+    'child', 'pediatric', 'baby', 'infant', 'toddler', 'adolescent',
+    'teen', 'puberty', 'growth', 'development', 'milestone', 'vaccine',
+    'immunization', 'well-child', 'checkup', 'circumcision',
+    
+    // Geriatric Health
+    'elderly', 'geriatric', 'aging', 'senior', 'memory', 'cognitive',
+    'mobility', 'balance', 'fall', 'fracture', 'hip', 'incontinence',
+    
+    // Lifestyle & Prevention
+    'exercise', 'fitness', 'workout', 'yoga', 'meditation', 'diet',
+    'nutrition', 'vitamin', 'mineral', 'supplement', 'herbal',
+    'sleep', 'rest', 'hygiene', 'sanitation', 'clean', 'wash',
+    'prevention', 'preventive', 'screening', 'early detection',
+    'quitting', 'smoking', 'alcohol', 'drug', 'substance',
+    
+    // Emergency & Urgent Conditions
+    'emergency', 'urgent', 'critical', 'severe', 'acute', 'sudden',
+    'unconscious', 'coma', 'seizure', 'convulsion', 'choking',
+    'suffocation', 'drowning', 'burn', 'electrocution', 'poison',
+    'overdose', 'allergic', 'anaphylaxis', 'shock', 'bleeding',
+    'hemorrhage', 'fracture', 'break', 'sprain', 'strain', 'dislocation',
+    
+    // Pain Types & Locations
+    'headache', 'migraine', 'neck pain', 'back pain', 'shoulder pain',
+    'arm pain', 'elbow pain', 'wrist pain', 'hand pain', 'chest pain',
+    'abdominal pain', 'stomach pain', 'pelvic pain', 'hip pain',
+    'leg pain', 'knee pain', 'ankle pain', 'foot pain', 'joint pain',
+    'muscle pain', 'nerve pain', 'sharp pain', 'dull pain', 'aching',
+    'throbbing', 'stabbing', 'burning', 'shooting', 'radiating',
+    
+    // Sensory Symptoms
+    'vision', 'blurry', 'double vision', 'blind', 'blindness',
+    'hearing', 'deaf', 'deafness', 'tinnitus', 'ringing',
+    'smell', 'taste', 'loss of smell', 'loss of taste',
+    
+    // Gastrointestinal Symptoms
+    'nausea', 'vomiting', 'diarrhea', 'constipation', 'bloating',
+    'gas', 'flatulence', 'belching', 'heartburn', 'indigestion',
+    'reflux', 'difficulty swallowing', 'dysphagia', 'blood in stool',
+    'black stool', 'mucus in stool', 'incontinence', 'hemorrhoid',
+    
+    // Respiratory Symptoms
+    'cough', 'sneeze', 'congestion', 'runny nose', 'nasal discharge',
+    'shortness of breath', 'dyspnea', 'wheezing', 'asthma attack',
+    'chest tightness', 'sputum', 'phlegm', 'blood in sputum',
+    
+    // Cardiovascular Symptoms
+    'chest pain', 'palpitation', 'irregular heartbeat', 'arrhythmia',
+    'rapid heartbeat', 'tachycardia', 'slow heartbeat', 'bradycardia',
+    'swelling', 'edema', 'leg swelling', 'shortness of breath',
+    
+    // Neurological Symptoms
+    'headache', 'dizziness', 'vertigo', 'fainting', 'syncope',
+    'seizure', 'convulsion', 'tremor', 'shaking', 'twitching',
+    'weakness', 'paralysis', 'numbness', 'tingling', 'paresthesia',
+    'memory loss', 'confusion', 'disorientation', 'speech difficulty',
+    'slurred speech', 'coordination problems', 'balance problems',
+    
+    // Skin & Dermatological
+    'rash', 'hives', 'urticaria', 'eczema', 'dermatitis', 'psoriasis',
+    'acne', 'pimple', 'boil', 'abscess', 'cyst', 'wart', 'mole',
+    'birthmark', 'freckle', 'skin cancer', 'melanoma', 'itching',
+    'pruritus', 'dry skin', 'oily skin', 'sweating', 'night sweats',
+    
+    // Endocrine & Metabolic
+    'thirst', 'hunger', 'appetite', 'weight', 'obesity', 'underweight',
+    'heat intolerance', 'cold intolerance', 'sweating', 'hair loss',
+    'growth', 'development', 'puberty', 'menstrual', 'fertility',
+    
+    // Urinary & Renal
+    'urination', 'frequency', 'urgency', 'incontinence', 'retention',
+    'painful urination', 'dysuria', 'blood in urine', 'hematuria',
+    'cloudy urine', 'foamy urine', 'kidney stone', 'renal colic',
+    
+    // Sexual & Reproductive
+    'libido', 'sex drive', 'erection', 'ejaculation', 'orgasm',
+    'pain during sex', 'dyspareunia', 'infertility', 'sterility',
+    'menstrual', 'period', 'pms', 'menopause', 'hot flash',
+    
+    // Psychological & Behavioral
+    'mood', 'affect', 'behavior', 'personality', 'cognition',
+    'concentration', 'attention', 'memory', 'learning', 'intelligence',
+    'perception', 'hallucination', 'delusion', 'paranoia', 'obsession',
+    'compulsion', 'impulse', 'addiction', 'dependence', 'withdrawal',
+    
+    // General Health States
+    'wellness', 'fitness', 'vitality', 'energy', 'fatigue', 'malaise',
+    'discomfort', 'distress', 'suffering', 'disability', 'handicap',
+    'recovery', 'healing', 'rehabilitation', 'convalescence', 'relapse',
+    
+    // Healthcare Settings
+    'hospital', 'clinic', 'office', 'emergency room', 'er', 'icu',
+    'ward', 'unit', 'department', 'pharmacy', 'laboratory', 'radiology',
+    
+    // Healthcare Professionals
+    'doctor', 'physician', 'surgeon', 'specialist', 'nurse', 'rn',
+    'therapist', 'counselor', 'psychologist', 'psychiatrist', 'dentist',
+    'optometrist', 'pharmacist', 'technician', 'assistant', 'aide',
+    
+    // Medical Equipment
+    'stethoscope', 'thermometer', 'bp cuff', 'glucometer', 'inhaler',
+    'nebulizer', 'walker', 'cane', 'wheelchair', 'crutch', 'brace',
+    
+    // Alternative Medicine
+    'acupuncture', 'chiropractic', 'homeopathy', 'ayurveda', 'herbal',
+    'supplement', 'vitamin', 'mineral', 'aromatherapy', 'massage',
+    
+    // Public Health
+    'epidemic', 'pandemic', 'outbreak', 'quarantine', 'isolation',
+    'contact tracing', 'herd immunity', 'vaccination', 'immunization',
+    
+    // Medical Specialties
+    'cardiology', 'dermatology', 'endocrinology', 'gastroenterology',
+    'hematology', 'infectious disease', 'nephrology', 'neurology',
+    'oncology', 'ophthalmology', 'orthopedics', 'otolaryngology',
+    'pediatrics', 'psychiatry', 'pulmonology', 'rheumatology',
+    'urology', 'gynecology', 'obstetrics', 'geriatrics'
+];
+    
     
     const hasMedicalKeyword = medicalKeywords.some(keyword => 
         message.toLowerCase().includes(keyword.toLowerCase())
@@ -657,7 +861,7 @@ async function sendMessage() {
         
         // Call Groq API
         const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-        const API_KEY = "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";
+        const API_KEY = "";
         
         const response = await fetch(GROQ_API_URL, {
             method: "POST",
