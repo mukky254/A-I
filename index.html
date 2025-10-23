@@ -1,35 +1,40 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. GenZ - AI Smart Doctor</title>
+    <meta name="viewport" content="width=device-width, initial‑scale=1.0">
+    <title>Smart Dr. GenZ ‑ AI Smart Doctor</title>
+
+    <link rel="icon" href="https://res.cloudinary.com/devwniw2h/image/upload/v1760874786/Gemini_Generated_Image_3ddoqg3ddoqg3ddo_oridbh.png" type="image/png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://res.cloudinary.com/devwniw2h/image/upload/v1760874786/Gemini_Generated_Image_3ddoqg3ddoqg3ddo_oridbh.png">
+
+    <meta property="og:title" content="Dr. GenZ ‑ AI Smart Doctor">
+    <meta property="og:description" content="Your AI Smart Doctor — personalized medical guidance and health insights.">
+    <meta property="og:image" content="https://res.cloudinary.com/devwniw2h/image/upload/v1760874786/Gemini_Generated_Image_3ddoqg3ddoqg3ddo_oridbh.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://smartdr.online">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-
 </head>
+
 <body>
-    <!-- Mobile Header -->
     <div class="mobile-header">
         <button class="mobile-menu-btn" id="mobile-menu-btn">
             <i class="fas fa-bars"></i>
         </button>
         <div class="mobile-title">Dr. GenZ</div>
-        <div style="width: 40px;"></div> <!-- Spacer for balance -->
+        <div style="width: 40px;"></div> 
     </div>
     
-    <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     
-    <!-- Voice Recording Indicator -->
     <div class="voice-recording-indicator" id="voice-recording-indicator">
         <i class="fas fa-microphone"></i>
         <div>Listening... Speak now</div>
     </div>
     
     <div class="app-container">
-        <!-- Welcome Screen -->
         <div class="welcome-screen" id="welcome-screen">
             <div class="welcome-content">
                 <h1 class="welcome-title">Dr. GenZ</h1>
@@ -79,14 +84,31 @@
             </div>
         </div>
         
-        <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">D</div>
                 <div class="sidebar-title">Dr. GenZ</div>
             </div>
+
+            <div class="sidebar-links">
+                <a href="www.games.com" class="sidebar-link" id="about-us-link" target="_blank">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About Us</span>
+                </a>
+                <a href="#" class="sidebar-link" id="privacy-link" target="_blank">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Privacy</span>
+                </a>
+                <a href="#" class="sidebar-link" id="contact-us-link" target="_blank">
+                    <i class="fas fa-envelope"></i>
+                    <span>Contact Us</span>
+                </a>
+                <a href="#" class="sidebar-link" id="partnership-link" target="_blank">
+                    <i class="fas fa-handshake"></i>
+                    <span>Partnership</span>
+                </a>
+            </div>
             
-           
             <div class="sidebar-footer">
                 <div class="user-info">
                     <div class="user-avatar">D</div>
@@ -98,7 +120,6 @@
             </div>
         </div>
         
-        <!-- Main Chat Area -->
         <div class="main-content">
             <div class="chat-header">
                 <div class="chat-title">
@@ -117,7 +138,6 @@
                 </div>
             </div>
             
-            <!-- Mobile Specialty Selector -->
             <div class="mobile-specialty-selector">
                 <select id="mobile-model-select">
                     <option value="general">General Medicine</option>
@@ -129,7 +149,6 @@
             </div>
             
             <div class="messages-container" id="messages-container">
-                <!-- Messages will be added here dynamically -->
             </div>
             
             <div class="medical-tools">
@@ -168,7 +187,6 @@
                     </div>
                 </div>
                 
-                <!-- Voice Controls -->
                 <div class="voice-controls">
                     <button class="voice-btn" id="start-voice-btn">
                         <i class="fas fa-microphone"></i>
@@ -184,7 +202,6 @@
                     </button>
                 </div>
                 
-                <!-- Voice Visualization -->
                 <div class="voice-visualizer" id="voice-visualizer" style="display: none;">
                     <div class="voice-bar"></div>
                     <div class="voice-bar"></div>
